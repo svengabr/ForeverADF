@@ -45,6 +45,9 @@ def collect(folder):
         if os.path.getmtime(run[0]) - os.path.getmtime(path) > GAP:
             break
         run.insert(0, path)
+    # /adf shots typed twice in a row: the last run counts
+    if len(run) > len(names) and len(run) % len(names) == 0:
+        run = run[-len(names):]
     if len(run) != len(names):
         sys.exit("The newest run has %d pictures, /adf shots takes %d. Nothing copied.\n"
                  "Run /adf shots again and take no other screenshot right before or after it." % (len(run), len(names)))
