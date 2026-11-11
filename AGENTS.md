@@ -55,7 +55,8 @@ Releases, **only on tags** `v*`, never on a plain push. It needs the repo secret
 
 Don't replace `## Version: @project-version@` by hand, the packager sets it from the tag; a source checkout
 shows `dev`. The README is also the CurseForge project description: after README changes, remind the maintainer
-to paste it there by hand. Tags and pushes only after the maintainer approves.
+to paste it there by hand, without the title, the logo and the gallery images (the CurseForge page already shows
+them above the description). Tags and pushes only after the maintainer approves.
 
 ## Artwork
 
