@@ -387,7 +387,7 @@ end
 local function ReadArmor(unit)
 	local ok, base, effective, real = pcall(UnitArmor, unit)
 	if not ok then return nil, nil end
-	if issecretvalue(effective) then return nil, effective end
+	if issecretvalue(effective) then return nil, nil end
 	-- The client answers 0 for units whose armor it does not hand out (enemies, as it turned out).
 	for _, value in ipairs({ effective or 0, Plain(real) or 0, Plain(base) or 0 }) do
 		if type(value) == "number" and value > 0 then return value, tostring(value) end

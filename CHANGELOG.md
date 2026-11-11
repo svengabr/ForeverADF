@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.1
+
+- The armor line no longer shows `0` in combat; it shows `?` there, as intended.
+
 ## 1.1.0
 
 - Debuff icons now work in combat. The client hides a target's debuffs from addons while you fight, so the icons

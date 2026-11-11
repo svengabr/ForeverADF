@@ -359,8 +359,10 @@ function ns.CreateHUD()
 			header.armor:SetTextColor(0.5, 0.5, 0.5)
 			header.armor:SetText("aDF")
 		else
-			-- armorText can be a secret: the font string may show it, the addon may not look at it
-			if state.armorText ~= nil and pcall(header.armor.SetText, header.armor, state.armorText) then
+			-- Only a real number counts. In combat the client hands out a secret instead, and that secret is
+			-- the same 0 it answers for every enemy out of combat.
+			if state.armor then
+				header.armor:SetText(state.armorText)
 				header.armor:SetTextColor(1, 1, 1)
 			elseif state.armorUnknown then
 				-- in combat the client shows the debuffs itself; the addon cannot add them up
