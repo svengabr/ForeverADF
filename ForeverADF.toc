@@ -12,6 +12,7 @@
 ## SavedVariablesPerCharacter: ForeverADFCharDB
 ## IconTexture: Interface\AddOns\ForeverADF\Icon
 ## X-License: GPL-3.0-or-later
+## X-Curse-Project-ID: 1798648
 
 Locale.lua
 Data.lua
