@@ -10,7 +10,7 @@
 # ## Version: @project-version@
 #@end-non-debug@
 ## SavedVariablesPerCharacter: ForeverADFCharDB
-## IconTexture: Interface\Icons\Ability_Warrior_Sunder
+## IconTexture: Interface\AddOns\ForeverADF\Icon
 ## X-License: GPL-3.0-or-later
 
 Locale.lua

@@ -1,72 +1,59 @@
 # Forever ADF
 
-Debuff frame for **WoW: Forever**. A small grid of icons that shows at a glance which of the important raid
-debuffs are on your target, in and out of combat.
+<img src="https://raw.githubusercontent.com/svengabr/ForeverADF/main/media/logo.png" alt="Forever ADF logo" width="128">
 
-It is a port of the Turtle WoW addon [aDF](https://turtle-wow.fandom.com/wiki/ADF), written from scratch for the
-Forever client.
+A colleague asked me to bring aDF over from Turtle WoW, where raids use it to see whether Sunder Armor and the curses are on the boss. Forever ADF is that for WoW Forever: a small grid of icons under your nose. An icon is lit while the debuff is on your target and dark while it is missing, and it shows the stacks and the time left.
 
-## Features
+It keeps working in combat, which on Forever is the hard part. More on that below.
 
-- **Debuff icons**: lit when the debuff is on the target, dark when it is missing, with stack count and
-  remaining time.
-- **Works in combat.** The icons are drawn by the game's own aura display, so they keep working while you fight.
-- **Friendly target?** Then the frame shows the debuffs of what your target is attacking, so healers see the
-  boss through the tank.
-- **Your own debuffs**: add any debuff by its spell ID.
-- Works in every client language. English and German interface.
+![Forever ADF](https://raw.githubusercontent.com/svengabr/ForeverADF/main/media/gallery/01-overview.jpg)
 
-### Debuffs out of the box
+## What it does
 
-Shown by default: Sunder Armor, Expose Armor, Faerie Fire (both forms), Curse of Recklessness, Armor Shatter
-(Annihilator), Fire Vulnerability (Improved Scorch), Winter's Chill, Shadow Vulnerability (Improved Shadow Bolt),
-Shadow Vulnerability (Shadow Weaving), Spell Vulnerability (Nightfall).
+- One icon per debuff you care about. Lit means it is on the target, dark means somebody should put it up.
+- Stacks and remaining time are on the icon, so you see Sunder Armor at 3 of 5 or a curse about to run out.
+- If your target is friendly, the frame shows what that player is attacking. A healer who has the tank targeted sees the boss's debuffs.
+- You choose which debuffs are tracked, how big the icons are and how many sit in a row. The frame can hide itself out of combat, outside of a group or without a target.
+- Anything that is not in the list you add yourself by spell ID.
+- English and German. The debuff names come from the game, so they are in your client's language either way.
 
-Available in the options: Judgement of Wisdom, Judgement of Light, Judgement of the Crusader, Demoralizing
-Shout, Demoralizing Roar, Thunder Clap, Hunter's Mark, Curse of Weakness, Curse of Tongues.
+## Debuffs in the list
 
-A debuff whose spell does not exist in your client is left out of the list.
+Shown from the start: Sunder Armor, Expose Armor, Faerie Fire (caster and feral), Curse of Recklessness, Armor Shatter from Annihilator, Fire Vulnerability from Improved Scorch, Winter's Chill, Shadow Vulnerability from Improved Shadow Bolt and from Shadow Weaving, and Spell Vulnerability from Nightfall.
 
-## Usage
+Switched off until you tick them: the three paladin judgements, Demoralizing Shout, Demoralizing Roar, Thunder Clap, Hunter's Mark, Curse of Weakness and Curse of Tongues.
+
+## Using it
+
+Type `/adf` for the options. To move the frame, hold Shift and drag it.
 
 | Command | What it does |
 | --- | --- |
-| `/adf` or `/adf options` | Open the options |
+| `/adf` | Open the options |
 | `/adf show` | Show the frame |
 | `/adf hide` | Hide the frame |
 | `/adf lock` | Lock or unlock the position |
-| `/adf reset` | Put the frame back to its default position |
+| `/adf reset` | Put the frame back where it started |
 
-- **Move**: hold Shift and drag the frame with the left mouse button.
-- **Remove one of your own debuffs**: right-click it in the options.
+To remove a debuff you added yourself, right-click it in the options. Settings are saved per character.
 
-Settings are saved per character.
+## What aDF had and this does not
 
-## Installation
+If you know aDF from Turtle WoW you will miss two things. I tried both and took them out again, because the Forever client does not allow them.
+
+The first is the armor number, and the resistances with it. Ask the Forever client for an enemy's armor and it answers 0, for every mob. The old 1.12 client told addons the real value.
+
+The second is announcing debuffs in chat. While you are in combat, Forever lets addons read nothing about a unit's debuffs. The game can still draw them, and that is how the icons work: the addon tells the game which spell belongs in which slot and the game fills it in. The addon itself never finds out which slots are lit, so it has nothing to announce.
+
+Curse of the Elements, Curse of Shadow and Ignite are not in the list either. Their vanilla spell IDs do not exist in the Forever client. If you find them under other IDs, add them as your own debuffs.
+
+## Installing by hand
 
 Copy the folder into `World of Warcraft/_forever_/Interface/AddOns/` and name it `ForeverADF`.
 
-## What is missing compared to aDF, and why
-
-aDF on Turtle WoW also shows the target's armor and resistances and announces them in chat. Forever ADF does
-not, because the Forever client does not make it possible:
-
-- **Armor and resistances.** The client answers `0` for the armor and every resistance of every enemy.
-- **Chat announcements and armor totals.** While you are in combat, the client lets addons read nothing about a
-  unit's debuffs. The game can draw them (that is how the icons work), but the addon never learns which ones
-  are up, so it cannot announce them or add up their armor reduction.
-
-Should a later client patch hand out those values, they can come back.
-
-Three debuffs of the original list do not exist in the Forever client under their vanilla spell IDs and are
-therefore not listed: Curse of the Elements, Curse of Shadow and Ignite. If they exist under other IDs, add them
-as your own debuffs.
-
 ## Credits
 
-aDF was created by **Atreyyo** (Vanillagaming.org), maintained for Turtle WoW by **Zebouski** with contributions
-by **Goffauxs**, and rewritten as 4.x by **Autignem**. Forever ADF shares the idea and the look, not the code.
-The way to show debuffs in combat was learned from **Platynator**.
+aDF was written by Atreyyo at Vanillagaming.org. Zebouski maintained it for Turtle WoW with contributions by Goffauxs, and Autignem rewrote it as version 4. Forever ADF takes the idea and the look from them. The code is new. How to show debuffs in combat I learned from reading Platynator.
 
 ## License
 

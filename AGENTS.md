@@ -55,3 +55,11 @@ Releases, **only on tags** `v*`, never on a plain push. It needs the repo secret
 Don't replace `## Version: @project-version@` by hand, the packager sets it from the tag; a source checkout
 shows `dev`. The README is also the CurseForge project description: after README changes, remind the maintainer
 to paste it there by hand. Tags and pushes only after the maintainer approves.
+
+## Artwork
+
+`media/logo.svg` is drawn by hand (no game assets; CurseForge rejects those as a logo). `sh media/render-logo.sh`
+renders `media/logo.png` and the in-game `Icon.tga`. `media/gallery/*.html` are the CurseForge gallery images
+(1920×1080), rendered with `sh media/gallery/render.sh`. Fonts and spell icons there are Blizzard assets and
+git-ignored: copy `fonts/FRIZQT__.TTF` from another addon's gallery and fetch
+`icons/<name>.jpg` from `https://wow.zamimg.com/images/wow/icons/large/<name>.jpg`.
