@@ -1,9 +1,9 @@
 ## Interface: 16001
 ## Title: Forever ADF
-## Notes: Armor and debuff frame for WoW: Forever. Shows your target's armor, resistances and the raid debuffs that matter (Sunder Armor, Faerie Fire, curses ...), with chat announcements. A port of the Turtle WoW addon aDF.
-## Notes-deDE: Rüstungs- und Debuff-Anzeige für WoW: Forever. Zeigt Rüstung, Widerstände und die wichtigen Raid-Debuffs deines Ziels (Rüstung zerreißen, Feenfeuer, Flüche ...) und sagt sie im Chat an. Eine Portierung des Turtle-WoW-Addons aDF.
+## Notes: Debuff frame for WoW: Forever. Shows at a glance which raid debuffs are on your target (Sunder Armor, Faerie Fire, curses ...), in and out of combat. A port of the Turtle WoW addon aDF.
+## Notes-deDE: Debuff-Anzeige für WoW: Forever. Zeigt auf einen Blick, welche Raid-Debuffs auf deinem Ziel sind (Rüstung zerreißen, Feenfeuer, Flüche ...), im Kampf und außerhalb. Eine Portierung des Turtle-WoW-Addons aDF.
 ## Author: Sven
-## Version: 1.2.2
+## Version: 2.0.0
 ## SavedVariablesPerCharacter: ForeverADFCharDB
 ## IconTexture: Interface\Icons\Ability_Warrior_Sunder
 ## X-License: GPL-3.0-or-later

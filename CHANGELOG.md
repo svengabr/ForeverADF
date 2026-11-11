@@ -1,5 +1,15 @@
 # Changelog
 
+## 2.0.0
+
+Forever ADF is now a pure debuff frame. Everything the Forever client does not support was removed:
+
+- Removed the armor line and the resistance line: the client answers 0 for both on every enemy.
+- Removed chat announcements and the armor total: in combat the client does not let addons know which debuffs
+  are up, so both only ever worked outside of fights.
+- Own debuffs are added by spell ID only; entries by name could not be shown in combat and were dropped.
+- The icons are drawn by the game's aura container alone, in and out of combat. `/adf debug` is gone.
+
 ## 1.2.2
 
 - The resistance line is hidden while the client answers 0 for every school, which it does for all enemies.

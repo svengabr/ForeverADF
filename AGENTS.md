@@ -7,33 +7,33 @@ Notes for AI agents working on Forever ADF.
 A port in spirit of aDF (Turtle WoW armor/debuff frame: github.com/Zebouski/aDF, github.com/Autignem/aDF) to
 WoW: Forever. Written from scratch; the originals carry no license, so do not paste their code.
 
-- `Data.lua` – the built-in debuffs (key, English name, spell ids of all ranks, fallback icon).
+On Forever only the debuff half of aDF is possible (see "Client facts"), so this is a debuff frame.
+
+- `Data.lua` – the built-in debuffs (key, spell ids of all ranks, fallback icon).
 - `Locale.lua` – English keys, deDE overrides.
-- `Core.lua` – namespace (`ForeverADF` global = `ns`), saved variables, debuff index (`ns.BuildIndex`), target
-  reading (`ns.Update`, every 0.25 s and on events), chat, slash command.
-- `Frame.lua` – the frame on screen (`ns.HUD`, `Layout` after option changes, `Render` on every update).
+- `Core.lua` – namespace (`ForeverADF` global = `ns`), saved variables, the debuff list (`ns.BuildIndex`), which
+  unit is shown (`ns.Update`), slash command.
+- `Frame.lua` – the frame on screen (`ns.HUD`): per debuff a dimmed icon of the addon and, on top, a slot of
+  the client's aura container. `Layout` runs after option changes.
 - `Options.lua` – the options window, built on first use.
 
-## Client facts
+## Client facts (all seen in the client, November 2026)
 
 - Interface 16001, Blizzard UI source: Gethe/wow-ui-source, branch `forever` (a 12.x-based client, vanilla-style
   classes and spell ranks, level 60).
-- Secret restrictions exist on Forever. Never compare or do maths on an API value without `ns.Plain`. A font
-  string may show a secret (`SetText` in a `pcall`), the addon may not look at it.
+- `UnitArmor` and `UnitResistance` of an enemy answer `0` out of combat and a secret in combat. There is no
+  armor or resistance to show.
 - In combat (`C_Secrets.ShouldAurasBeSecret()` true) `C_UnitAuras.GetAuraDataByIndex` raises "Auras cannot be
-  accessed when secret", and the by-id / by-name lookups return nil (seen in the client). `UnitArmor` of an enemy
-  is `0 0 0 0` out of combat and secret in combat.
+  accessed when secret", and `GetUnitAuraBySpellID` / `GetAuraDataBySpellName` return nil.
 - The way to show auras in combat is the client's `AuraContainer` (`CustomAuraContainerTemplate`):
   `AddAuraSlot(key, "HARMFUL", { initializeFrame, candidateFilters = { includeSpellIDs } })`, `SetUnit`,
   `SetEnabled`, `SetAuraSlotEnabled`; on the slot frame `SetIcon`, `SetApplicationCount`, `SetDurationText`.
   Recipe taken from Platynator (`Display/Auras/AurasNext.lua`). Slot frames may only be moved out of combat.
-  `Frame.lua` lays one slot over each of the addon's own (dimmed) icons.
 - In combat a slot frame answers nothing: `IsShown`, `IsVisible`, `GetAlpha`, `GetTexture` of its icon and
-  `GetText` of its font strings raise errors, `HookScript("OnShow")` is refused (all tested in the client). There
-  is no way for the addon to know in combat which debuffs are up; do not try again.
-- Unit tokens like `targettarget` can be refused by aura and stat functions; every such call is in a `pcall`.
-- Debuffs are matched by spell id first, then by the client's localized spell name. A name shared by two entries
-  (both "Shadow Vulnerability" debuffs) is matched by id only.
+  `GetText` of its font strings raise errors, `HookScript("OnShow")` is refused. The addon cannot know in combat
+  which debuffs are up. Versions 1.0–1.2 tried (armor total, chat announcements); do not try again.
+- Vanilla spells missing in the Forever client: Curse of the Elements (1490), Curse of Shadow (17862),
+  Ignite (12654).
 
 ## Rules
 

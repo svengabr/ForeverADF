@@ -9,7 +9,6 @@ local COLUMN_WIDTH = 240
 
 local window
 local checks, sliders, debuffRows = {}, {}, {}
-local channelButton
 
 local BACKDROP = {
 	bgFile = "Interface\\Buttons\\WHITE8x8",
@@ -157,7 +156,7 @@ end
 local function Build()
 	window = CreateFrame("Frame", "ForeverADFOptions", UIParent, "BackdropTemplate")
 	window:Hide()
-	window:SetSize(770, 560)
+	window:SetSize(770, 480)
 	window:SetPoint("CENTER")
 	window:SetFrameStrata("DIALOG")
 	window:SetToplevel(true)
@@ -185,14 +184,12 @@ local function Build()
 	y = y - 22
 	local displayChecks = {
 		{ "enabled", L["Show the frame"] },
-		{ "showArmor", L["Show armor"] },
-		{ "showResists", L["Show resistances"], L["The Forever client currently answers 0 for every enemy resistance. The line only appears when the client hands out real values."] },
 		{ "showTimers", L["Show remaining time"] },
 		{ "hideOOC", L["Hide out of combat"] },
 		{ "hideSolo", L["Hide when not in a group"] },
 		{ "hideNoTarget", L["Hide without a target"] },
 		{ "locked", L["Lock position"] },
-		{ "clickThrough", L["Click-through"], L["The frame ignores the mouse: no tooltips, no announcing by right-click, no moving."] },
+		{ "clickThrough", L["Click-through"], L["The frame ignores the mouse: no tooltips, no moving."] },
 	}
 	for _, def in ipairs(displayChecks) do
 		Check(window, def[1], def[2], x, y, def[3])
@@ -204,31 +201,15 @@ local function Build()
 	Slider(window, "perRow", L["Icons per row"], 1, 15, x + 4, y)
 	y = y - 46
 
-	Heading(window, L["Announcements"], x, y)
-	y = y - 24
-	channelButton = Button(window, "", 220, function()
-		local current = 1
-		for index, channel in ipairs(ns.CHANNELS) do
-			if channel == ns.db.channel then current = index end
-		end
-		ns.db.channel = ns.CHANNELS[current % #ns.CHANNELS + 1]
-		ns.RefreshOptions()
-	end)
-	channelButton:SetPoint("TOPLEFT", x, y)
-	Tooltip(channelButton, L["Click to switch the channel."], L["Automatic picks raid, then party, then say."])
-	y = y - 26
-	Check(window, "announceDrops", L["Announce when armor goes back up"], x, y,
-		L["Tells the channel when a debuff ran out and the target's armor went back up. Outside of a group this only prints to your own chat."])
-	y = y - 34
-
 	Heading(window, L["Add your own debuff"], x, y)
 	y = y - 24
 	local input = CreateFrame("EditBox", nil, window, "InputBoxTemplate")
 	input:SetSize(110, 20)
 	input:SetPoint("TOPLEFT", x + 6, y)
 	input:SetAutoFocus(false)
-	input:SetMaxLetters(60)
-	Tooltip(input, L["Add your own debuff"], L["Spell ID or exact debuff name"])
+	input:SetMaxLetters(10)
+	if input.SetNumeric then input:SetNumeric(true) end
+	Tooltip(input, L["Add your own debuff"], L["Enter the spell ID of the debuff. The game shows it only by its ID in combat, so a name is not enough."])
 	local function AddFromInput()
 		local label, problem = ns.AddCustom(input:GetText())
 		if label then
@@ -269,7 +250,6 @@ function ns.RefreshOptions()
 		slider.label:SetText(("%s: |cffffffff%d|r"):format(slider.text, db[key]))
 		slider:SetValue(db[key])
 	end
-	channelButton:SetText(L["Channel: %s"]:format(L[ns.CHANNEL_LABELS[db.channel] or "Automatic"]))
 
 	for index, entry in ipairs(ns.entries) do
 		if index > ns.MAX_ENTRIES then break end
