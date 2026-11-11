@@ -375,8 +375,24 @@ local function ScanAuras(unit)
 	return found, unknown, restricted
 end
 
--- Armor the active debuffs take off, by the vanilla values. An unknown rank counts as the highest one and
--- unknown stacks as one; the second return says that the total is such an estimate.
+local function PlayerKnows(id)
+	local known = (C_SpellBook and Try(C_SpellBook.IsSpellKnown, id)) or Try(IsPlayerSpell, id) or Try(IsSpellKnown, id)
+	return Plain(known) and true or false
+end
+
+-- The reduction to assume when the rank on the mob is hidden: the highest rank the player knows (their own
+-- Faerie Fire or Sunder is the likely one), otherwise the highest rank there is.
+local function AssumedReduction(entry)
+	local own, highest = 0, 0
+	for id, value in pairs(entry.reduce) do
+		highest = math.max(highest, value)
+		if PlayerKnows(id) then own = math.max(own, value) end
+	end
+	return own > 0 and own or highest
+end
+
+-- Armor the active debuffs take off, by the vanilla values. An unknown rank is assumed (see above) and
+-- unknown stacks count as one; the second return says that the total is such an estimate.
 local function ArmorReduction(found)
 	local total, estimate = 0, false
 	for key, hit in pairs(found) do
@@ -384,8 +400,7 @@ local function ArmorReduction(found)
 		if entry and entry.reduce then
 			local amount = hit.id and entry.reduce[hit.id]
 			if not amount then
-				amount = 0
-				for _, value in pairs(entry.reduce) do amount = math.max(amount, value) end
+				amount = AssumedReduction(entry)
 				if next(entry.reduce, next(entry.reduce)) then estimate = true end -- more than one rank
 			end
 			if entry.perStack then
