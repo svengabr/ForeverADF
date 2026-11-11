@@ -5,6 +5,8 @@
 - `/adf shots` takes the screenshots for the gallery, with made-up debuffs lit on the frame. `/adf shots demo`
   shows those made-up debuffs for pictures taken by hand.
 - The addon list shows the addon's own icon.
+- New languages: French, Spanish, Brazilian Portuguese and Russian.
+- The options window is wider, so long debuff names are no longer cut off.
 
 ## 2.0.0
 

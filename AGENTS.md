@@ -10,7 +10,8 @@ WoW: Forever. Written from scratch; the originals carry no license, so do not pa
 On Forever only the debuff half of aDF is possible (see "Client facts"), so this is a debuff frame.
 
 - `Data.lua` – the built-in debuffs (key, spell ids of all ranks, fallback icon).
-- `Locale.lua` – English keys, deDE overrides.
+- `Locale.lua` – English keys, one table of overrides per language (deDE, frFR, esES/esMX, ptBR, ruRU). The
+  translations other than German were written by the AI and not checked by a native speaker.
 - `Core.lua` – namespace (`ForeverADF` global = `ns`), saved variables, the debuff list (`ns.BuildIndex`), which
   unit is shown (`ns.Update`), slash command.
 - `Frame.lua` – the frame on screen (`ns.HUD`): per debuff a dimmed icon of the addon and, on top, a slot of
@@ -37,7 +38,7 @@ On Forever only the debuff half of aDF is possible (see "Client facts"), so this
 
 ## Rules
 
-- English only in the repo (code, comments, commits, docs). German lives in `Locale.lua` only.
+- English only in the repo (code, comments, commits, docs). Other languages live in `Locale.lua` and the TOC notes only.
 - Conventional Commits.
 - No unit tests; in-game behaviour can only be checked in the client – say so honestly.
 - luacheck: `docker run --rm -v "$PWD:/data" -w /data ghcr.io/lunarmodules/luacheck .` – add new globals to

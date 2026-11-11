@@ -2,6 +2,11 @@
 ## Title: Forever ADF
 ## Notes: Debuff frame for WoW: Forever. Shows at a glance which raid debuffs are on your target (Sunder Armor, Faerie Fire, curses ...), in and out of combat. A port of the Turtle WoW addon aDF.
 ## Notes-deDE: Debuff-Anzeige für WoW: Forever. Zeigt auf einen Blick, welche Raid-Debuffs auf deinem Ziel sind (Rüstung zerreißen, Feenfeuer, Flüche ...), im Kampf und außerhalb. Eine Portierung des Turtle-WoW-Addons aDF.
+## Notes-frFR: Cadre d'affaiblissements pour WoW: Forever. Montre d'un coup d'œil quels affaiblissements de raid sont sur votre cible, en combat et hors combat. Un portage de l'addon aDF de Turtle WoW.
+## Notes-esES: Marco de perjuicios para WoW: Forever. Muestra de un vistazo qué perjuicios de banda tiene tu objetivo, dentro y fuera de combate. Una adaptación del addon aDF de Turtle WoW.
+## Notes-esMX: Marco de perjuicios para WoW: Forever. Muestra de un vistazo qué perjuicios de banda tiene tu objetivo, dentro y fuera de combate. Una adaptación del addon aDF de Turtle WoW.
+## Notes-ptBR: Quadro de penalidades para WoW: Forever. Mostra de relance quais penalidades de raide estão no seu alvo, dentro e fora de combate. Uma adaptação do addon aDF do Turtle WoW.
+## Notes-ruRU: Панель дебаффов для WoW: Forever. Сразу видно, какие рейдовые дебаффы висят на цели, в бою и вне боя. Порт аддона aDF с Turtle WoW.
 ## Author: Sven
 #@debug@
 ## Version: dev

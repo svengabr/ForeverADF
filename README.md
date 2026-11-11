@@ -15,7 +15,7 @@ It keeps working in combat, which on Forever is the hard part. More on that belo
 - If your target is friendly, the frame shows what that player is attacking. A healer who has the tank targeted sees the boss's debuffs.
 - You choose which debuffs are tracked, how big the icons are and how many sit in a row. The frame can hide itself out of combat, outside of a group or without a target.
 - Anything that is not in the list you add yourself by spell ID.
-- English and German. The debuff names come from the game, so they are in your client's language either way.
+- In English, German, French, Spanish, Brazilian Portuguese and Russian; the addon follows the language of your game. The debuff names come from the game itself, so they are in your client's language in any case.
 
 ![The options](https://raw.githubusercontent.com/svengabr/ForeverADF/main/media/gallery/02-options.jpg)
 

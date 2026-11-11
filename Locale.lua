@@ -1,53 +1,235 @@
--- English strings are the keys; other languages override them below.
+-- English strings are the keys; every other language is a table of overrides. A string missing from a table
+-- falls back to English. Spanish for Latin America (esMX) uses the esES table.
+-- The debuff names are not here: they come from the client, in the client's language.
 local _, ns = ...
 
 local L = setmetatable({}, { __index = function(_, key) return key end })
 ns.L = L
 
-if GetLocale() ~= "deDE" then return end
+local T = {}
 
--- Frame
-L["Lit: on the target. Dark: missing."] = "Hell: auf dem Ziel. Dunkel: fehlt."
-L["Shift + drag: move"] = "Umschalt + Ziehen: verschieben"
-L["This client has no aura container; the icons cannot light up."] = "Dieser Client hat keinen Aura-Container; die Symbole können nicht aufleuchten."
+T.deDE = {
+	-- Frame
+	["Lit: on the target. Dark: missing."] = "Hell: auf dem Ziel. Dunkel: fehlt.",
+	["Shift + drag: move"] = "Umschalt + Ziehen: verschieben",
+	["This client has no aura container; the icons cannot light up."] = "Dieser Client hat keinen Aura-Container; die Symbole können nicht aufleuchten.",
+	-- Chat
+	["Frame shown."] = "Anzeige eingeblendet.",
+	["Frame hidden. Type /adf show to bring it back."] = "Anzeige ausgeblendet. Mit /adf show holst du sie zurück.",
+	["Position reset."] = "Position zurückgesetzt.",
+	["Frame locked."] = "Anzeige gesperrt.",
+	["Frame unlocked. Hold Shift and drag to move it."] = "Anzeige entsperrt. Zum Verschieben Umschalt halten und ziehen.",
+	["Commands:"] = "Befehle:",
+	["open the options"] = "Optionen öffnen",
+	["show the frame"] = "Anzeige einblenden",
+	["hide the frame"] = "Anzeige ausblenden",
+	["lock or unlock the frame"] = "Anzeige sperren oder entsperren",
+	["reset the position"] = "Position zurücksetzen",
+	["Loaded. Type /adf for the options."] = "Geladen. /adf öffnet die Optionen.",
+	-- Options
+	["Options"] = "Optionen",
+	["Display"] = "Anzeige",
+	["Show the frame"] = "Anzeige einblenden",
+	["Show remaining time"] = "Restzeit anzeigen",
+	["Hide out of combat"] = "Außerhalb des Kampfes ausblenden",
+	["Hide when not in a group"] = "Ohne Gruppe ausblenden",
+	["Hide without a target"] = "Ohne Ziel ausblenden",
+	["Lock position"] = "Position sperren",
+	["Click-through"] = "Klicks durchlassen",
+	["The frame ignores the mouse: no tooltips, no moving."] = "Die Anzeige ignoriert die Maus: keine Tooltips, kein Verschieben.",
+	["Icon size"] = "Symbolgröße",
+	["Icons per row"] = "Symbole pro Reihe",
+	["Tracked debuffs"] = "Verfolgte Debuffs",
+	["Add your own debuff"] = "Eigenen Debuff hinzufügen",
+	["Enter the spell ID of the debuff. The game shows it only by its ID in combat, so a name is not enough."] = "Gib die Zauber-ID des Debuffs ein. Im Kampf zeigt das Spiel ihn nur anhand der ID, ein Name reicht darum nicht.",
+	["Please enter a spell ID (a number)."] = "Bitte eine Zauber-ID (eine Zahl) eingeben.",
+	["Add"] = "Hinzufügen",
+	["Added %s."] = "%s hinzugefügt.",
+	["Removed %s."] = "%s entfernt.",
+	["%s is already in the list."] = "%s steht schon in der Liste.",
+	["There is no spell with ID %d in this client."] = "Einen Zauber mit der ID %d gibt es in diesem Client nicht.",
+	["The list is full (%d debuffs)."] = "Die Liste ist voll (%d Debuffs).",
+	["Your own entry. Right-click to remove it."] = "Dein eigener Eintrag. Rechtsklick entfernt ihn.",
+	["Reset position"] = "Position zurücksetzen",
+	["Close"] = "Schließen",
+}
 
--- Chat
-L["Frame shown."] = "Anzeige eingeblendet."
-L["Frame hidden. Type /adf show to bring it back."] = "Anzeige ausgeblendet. Mit /adf show holst du sie zurück."
-L["Position reset."] = "Position zurückgesetzt."
-L["Frame locked."] = "Anzeige gesperrt."
-L["Frame unlocked. Hold Shift and drag to move it."] = "Anzeige entsperrt. Zum Verschieben Umschalt halten und ziehen."
-L["Commands:"] = "Befehle:"
-L["open the options"] = "Optionen öffnen"
-L["show the frame"] = "Anzeige einblenden"
-L["hide the frame"] = "Anzeige ausblenden"
-L["lock or unlock the frame"] = "Anzeige sperren oder entsperren"
-L["reset the position"] = "Position zurücksetzen"
-L["Loaded. Type /adf for the options."] = "Geladen. /adf öffnet die Optionen."
+T.frFR = {
+	["Lit: on the target. Dark: missing."] = "Allumée : sur la cible. Sombre : absente.",
+	["Shift + drag: move"] = "Maj + glisser : déplacer",
+	["This client has no aura container; the icons cannot light up."] = "Ce client n'a pas de conteneur d'auras ; les icônes ne peuvent pas s'allumer.",
+	["Frame shown."] = "Cadre affiché.",
+	["Frame hidden. Type /adf show to bring it back."] = "Cadre masqué. Tapez /adf show pour le réafficher.",
+	["Position reset."] = "Position réinitialisée.",
+	["Frame locked."] = "Cadre verrouillé.",
+	["Frame unlocked. Hold Shift and drag to move it."] = "Cadre déverrouillé. Maintenez Maj et faites-le glisser pour le déplacer.",
+	["Commands:"] = "Commandes :",
+	["open the options"] = "ouvrir les options",
+	["show the frame"] = "afficher le cadre",
+	["hide the frame"] = "masquer le cadre",
+	["lock or unlock the frame"] = "verrouiller ou déverrouiller le cadre",
+	["reset the position"] = "réinitialiser la position",
+	["Loaded. Type /adf for the options."] = "Chargé. Tapez /adf pour les options.",
+	["Options"] = "Options",
+	["Display"] = "Affichage",
+	["Show the frame"] = "Afficher le cadre",
+	["Show remaining time"] = "Afficher le temps restant",
+	["Hide out of combat"] = "Masquer hors combat",
+	["Hide when not in a group"] = "Masquer hors groupe",
+	["Hide without a target"] = "Masquer sans cible",
+	["Lock position"] = "Verrouiller la position",
+	["Click-through"] = "Ignorer la souris",
+	["The frame ignores the mouse: no tooltips, no moving."] = "Le cadre ignore la souris : pas d'infobulles, pas de déplacement.",
+	["Icon size"] = "Taille des icônes",
+	["Icons per row"] = "Icônes par ligne",
+	["Tracked debuffs"] = "Affaiblissements suivis",
+	["Add your own debuff"] = "Ajouter un affaiblissement",
+	["Enter the spell ID of the debuff. The game shows it only by its ID in combat, so a name is not enough."] = "Saisissez l'ID de sort de l'affaiblissement. En combat, le jeu ne l'affiche que par son ID ; un nom ne suffit donc pas.",
+	["Please enter a spell ID (a number)."] = "Veuillez saisir un ID de sort (un nombre).",
+	["Add"] = "Ajouter",
+	["Added %s."] = "%s ajouté.",
+	["Removed %s."] = "%s retiré.",
+	["%s is already in the list."] = "%s est déjà dans la liste.",
+	["There is no spell with ID %d in this client."] = "Aucun sort avec l'ID %d n'existe dans ce client.",
+	["The list is full (%d debuffs)."] = "La liste est pleine (%d affaiblissements).",
+	["Your own entry. Right-click to remove it."] = "Votre propre entrée. Clic droit pour la retirer.",
+	["Reset position"] = "Réinitialiser la position",
+	["Close"] = "Fermer",
+}
 
--- Options
-L["Options"] = "Optionen"
-L["Display"] = "Anzeige"
-L["Show the frame"] = "Anzeige einblenden"
-L["Show remaining time"] = "Restzeit anzeigen"
-L["Hide out of combat"] = "Außerhalb des Kampfes ausblenden"
-L["Hide when not in a group"] = "Ohne Gruppe ausblenden"
-L["Hide without a target"] = "Ohne Ziel ausblenden"
-L["Lock position"] = "Position sperren"
-L["Click-through"] = "Klicks durchlassen"
-L["The frame ignores the mouse: no tooltips, no moving."] = "Die Anzeige ignoriert die Maus: keine Tooltips, kein Verschieben."
-L["Icon size"] = "Symbolgröße"
-L["Icons per row"] = "Symbole pro Reihe"
-L["Tracked debuffs"] = "Verfolgte Debuffs"
-L["Add your own debuff"] = "Eigenen Debuff hinzufügen"
-L["Enter the spell ID of the debuff. The game shows it only by its ID in combat, so a name is not enough."] = "Gib die Zauber-ID des Debuffs ein. Im Kampf zeigt das Spiel ihn nur anhand der ID, ein Name reicht darum nicht."
-L["Please enter a spell ID (a number)."] = "Bitte eine Zauber-ID (eine Zahl) eingeben."
-L["Add"] = "Hinzufügen"
-L["Added %s."] = "%s hinzugefügt."
-L["Removed %s."] = "%s entfernt."
-L["%s is already in the list."] = "%s steht schon in der Liste."
-L["There is no spell with ID %d in this client."] = "Einen Zauber mit der ID %d gibt es in diesem Client nicht."
-L["The list is full (%d debuffs)."] = "Die Liste ist voll (%d Debuffs)."
-L["Your own entry. Right-click to remove it."] = "Dein eigener Eintrag. Rechtsklick entfernt ihn."
-L["Reset position"] = "Position zurücksetzen"
-L["Close"] = "Schließen"
+T.esES = {
+	["Lit: on the target. Dark: missing."] = "Encendido: en el objetivo. Apagado: falta.",
+	["Shift + drag: move"] = "Mayús + arrastrar: mover",
+	["This client has no aura container; the icons cannot light up."] = "Este cliente no tiene contenedor de auras; los iconos no pueden encenderse.",
+	["Frame shown."] = "Marco visible.",
+	["Frame hidden. Type /adf show to bring it back."] = "Marco oculto. Escribe /adf show para volver a mostrarlo.",
+	["Position reset."] = "Posición restablecida.",
+	["Frame locked."] = "Marco bloqueado.",
+	["Frame unlocked. Hold Shift and drag to move it."] = "Marco desbloqueado. Mantén Mayús y arrástralo para moverlo.",
+	["Commands:"] = "Comandos:",
+	["open the options"] = "abrir las opciones",
+	["show the frame"] = "mostrar el marco",
+	["hide the frame"] = "ocultar el marco",
+	["lock or unlock the frame"] = "bloquear o desbloquear el marco",
+	["reset the position"] = "restablecer la posición",
+	["Loaded. Type /adf for the options."] = "Cargado. Escribe /adf para las opciones.",
+	["Options"] = "Opciones",
+	["Display"] = "Visualización",
+	["Show the frame"] = "Mostrar el marco",
+	["Show remaining time"] = "Mostrar el tiempo restante",
+	["Hide out of combat"] = "Ocultar fuera de combate",
+	["Hide when not in a group"] = "Ocultar sin grupo",
+	["Hide without a target"] = "Ocultar sin objetivo",
+	["Lock position"] = "Bloquear la posición",
+	["Click-through"] = "Ignorar el ratón",
+	["The frame ignores the mouse: no tooltips, no moving."] = "El marco ignora el ratón: sin descripciones emergentes y sin moverlo.",
+	["Icon size"] = "Tamaño de los iconos",
+	["Icons per row"] = "Iconos por fila",
+	["Tracked debuffs"] = "Perjuicios seguidos",
+	["Add your own debuff"] = "Añadir un perjuicio propio",
+	["Enter the spell ID of the debuff. The game shows it only by its ID in combat, so a name is not enough."] = "Introduce el ID de hechizo del perjuicio. En combate el juego solo lo muestra por su ID, así que un nombre no basta.",
+	["Please enter a spell ID (a number)."] = "Introduce un ID de hechizo (un número).",
+	["Add"] = "Añadir",
+	["Added %s."] = "%s añadido.",
+	["Removed %s."] = "%s eliminado.",
+	["%s is already in the list."] = "%s ya está en la lista.",
+	["There is no spell with ID %d in this client."] = "No existe ningún hechizo con el ID %d en este cliente.",
+	["The list is full (%d debuffs)."] = "La lista está llena (%d perjuicios).",
+	["Your own entry. Right-click to remove it."] = "Tu propia entrada. Clic derecho para eliminarla.",
+	["Reset position"] = "Restablecer posición",
+	["Close"] = "Cerrar",
+}
+T.esMX = T.esES
+
+T.ptBR = {
+	["Lit: on the target. Dark: missing."] = "Aceso: no alvo. Apagado: faltando.",
+	["Shift + drag: move"] = "Shift + arrastar: mover",
+	["This client has no aura container; the icons cannot light up."] = "Este cliente não tem contêiner de auras; os ícones não podem acender.",
+	["Frame shown."] = "Quadro exibido.",
+	["Frame hidden. Type /adf show to bring it back."] = "Quadro oculto. Digite /adf show para exibi-lo de novo.",
+	["Position reset."] = "Posição redefinida.",
+	["Frame locked."] = "Quadro travado.",
+	["Frame unlocked. Hold Shift and drag to move it."] = "Quadro destravado. Segure Shift e arraste para movê-lo.",
+	["Commands:"] = "Comandos:",
+	["open the options"] = "abrir as opções",
+	["show the frame"] = "exibir o quadro",
+	["hide the frame"] = "ocultar o quadro",
+	["lock or unlock the frame"] = "travar ou destravar o quadro",
+	["reset the position"] = "redefinir a posição",
+	["Loaded. Type /adf for the options."] = "Carregado. Digite /adf para as opções.",
+	["Options"] = "Opções",
+	["Display"] = "Exibição",
+	["Show the frame"] = "Exibir o quadro",
+	["Show remaining time"] = "Exibir o tempo restante",
+	["Hide out of combat"] = "Ocultar fora de combate",
+	["Hide when not in a group"] = "Ocultar sem grupo",
+	["Hide without a target"] = "Ocultar sem alvo",
+	["Lock position"] = "Travar a posição",
+	["Click-through"] = "Ignorar o mouse",
+	["The frame ignores the mouse: no tooltips, no moving."] = "O quadro ignora o mouse: sem dicas e sem movê-lo.",
+	["Icon size"] = "Tamanho dos ícones",
+	["Icons per row"] = "Ícones por linha",
+	["Tracked debuffs"] = "Penalidades acompanhadas",
+	["Add your own debuff"] = "Adicionar uma penalidade",
+	["Enter the spell ID of the debuff. The game shows it only by its ID in combat, so a name is not enough."] = "Digite o ID de feitiço da penalidade. Em combate o jogo só a exibe pelo ID, então um nome não basta.",
+	["Please enter a spell ID (a number)."] = "Digite um ID de feitiço (um número).",
+	["Add"] = "Adicionar",
+	["Added %s."] = "%s adicionado.",
+	["Removed %s."] = "%s removido.",
+	["%s is already in the list."] = "%s já está na lista.",
+	["There is no spell with ID %d in this client."] = "Não existe feitiço com o ID %d neste cliente.",
+	["The list is full (%d debuffs)."] = "A lista está cheia (%d penalidades).",
+	["Your own entry. Right-click to remove it."] = "Sua própria entrada. Clique direito para removê-la.",
+	["Reset position"] = "Redefinir posição",
+	["Close"] = "Fechar",
+}
+
+T.ruRU = {
+	["Lit: on the target. Dark: missing."] = "Яркий: на цели. Тёмный: отсутствует.",
+	["Shift + drag: move"] = "Shift + перетаскивание: переместить",
+	["This client has no aura container; the icons cannot light up."] = "В этом клиенте нет контейнера аур; значки не могут загораться.",
+	["Frame shown."] = "Панель показана.",
+	["Frame hidden. Type /adf show to bring it back."] = "Панель скрыта. Введите /adf show, чтобы вернуть её.",
+	["Position reset."] = "Положение сброшено.",
+	["Frame locked."] = "Панель закреплена.",
+	["Frame unlocked. Hold Shift and drag to move it."] = "Панель откреплена. Удерживайте Shift и перетащите её.",
+	["Commands:"] = "Команды:",
+	["open the options"] = "открыть настройки",
+	["show the frame"] = "показать панель",
+	["hide the frame"] = "скрыть панель",
+	["lock or unlock the frame"] = "закрепить или открепить панель",
+	["reset the position"] = "сбросить положение",
+	["Loaded. Type /adf for the options."] = "Загружено. Введите /adf, чтобы открыть настройки.",
+	["Options"] = "Настройки",
+	["Display"] = "Отображение",
+	["Show the frame"] = "Показывать панель",
+	["Show remaining time"] = "Показывать оставшееся время",
+	["Hide out of combat"] = "Скрывать вне боя",
+	["Hide when not in a group"] = "Скрывать вне группы",
+	["Hide without a target"] = "Скрывать без цели",
+	["Lock position"] = "Закрепить положение",
+	["Click-through"] = "Игнорировать мышь",
+	["The frame ignores the mouse: no tooltips, no moving."] = "Панель не реагирует на мышь: нет подсказок и перемещения.",
+	["Icon size"] = "Размер значков",
+	["Icons per row"] = "Значков в ряду",
+	["Tracked debuffs"] = "Отслеживаемые дебаффы",
+	["Add your own debuff"] = "Добавить свой дебафф",
+	["Enter the spell ID of the debuff. The game shows it only by its ID in combat, so a name is not enough."] = "Введите ID заклинания дебаффа. В бою игра показывает его только по ID, поэтому названия недостаточно.",
+	["Please enter a spell ID (a number)."] = "Введите ID заклинания (число).",
+	["Add"] = "Добавить",
+	["Added %s."] = "Добавлено: %s.",
+	["Removed %s."] = "Удалено: %s.",
+	["%s is already in the list."] = "%s уже есть в списке.",
+	["There is no spell with ID %d in this client."] = "В этом клиенте нет заклинания с ID %d.",
+	["The list is full (%d debuffs)."] = "Список заполнен (дебаффов: %d).",
+	["Your own entry. Right-click to remove it."] = "Ваша собственная запись. Щёлкните правой кнопкой, чтобы удалить.",
+	["Reset position"] = "Сбросить положение",
+	["Close"] = "Закрыть",
+}
+
+local strings = T[GetLocale()]
+if strings then
+	for key, text in pairs(strings) do L[key] = text end
+end
+
+ns.LocaleTables = T -- for the check that every language has every string
