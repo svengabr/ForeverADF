@@ -1,7 +1,7 @@
 -- /adf shots: takes the reference screenshots the gallery images are made from (media/gallery/gallery.py picks
 -- them up from the game's Screenshots folder). Nobody has a raid at hand that keeps Sunder Armor and three curses
 -- on a mob for a picture, so during the run the frame shows made-up debuffs: the addon lights its own icons and
--- writes stacks and times on them. Everything else in the pictures is the game as it is.
+-- writes stacks and times on them. For the world picture the rest of the interface is hidden, like with Alt-Z.
 -- The game names a screenshot after the second it was taken in, so the pictures are two seconds apart.
 local _, ns = ...
 
@@ -104,14 +104,35 @@ local function Options(show)
 	return window
 end
 
+-- Hides the whole interface except the frame, like Alt-Z, so the world picture shows no other addon. The frame
+-- leaves UIParent for that time and takes UIParent's scale along. Nameplates belong to the world and stay.
+local function HideInterface(hide)
+	local hud = ns.HUD
+	if hide then
+		hud:SetParent(nil)
+		hud:SetScale(UIParent:GetEffectiveScale())
+		hud:SetFrameStrata("LOW")
+		hud:Show()
+		pcall(UIParent.Hide, UIParent)
+	else
+		pcall(UIParent.Show, UIParent)
+		hud:SetParent(UIParent)
+		hud:SetScale(1)
+		hud:SetFrameStrata("LOW")
+		hud:Show()
+	end
+end
+
 SHOTS = {
-	-- the frame in the game world, wherever the player stands
+	-- the frame in the game world, wherever the player stands, with the rest of the interface hidden
 	{ "01-world", function()
 		Options(false)
 		Backdrop(false)
+		HideInterface(true)
 	end },
 	-- the frame alone: gallery.py reads from this picture where on the screen the frame is
 	{ "02-frame", function()
+		HideInterface(false)
 		Backdrop(true)
 	end },
 	-- the options, with the frame above them
@@ -132,6 +153,8 @@ function ns.TakeShots()
 	if running then return end
 	if not shoot then return ns.Print("shots: this client has no Screenshot()") end
 	if not ns.HUD then return end
+	-- hiding the interface is not allowed in combat
+	if InCombatLockdown and InCombatLockdown() then return ns.Print("shots: leave combat first.") end
 	running = true
 	-- the "screen captured" line of one picture would be in the next one
 	local status = rawget(_G, "ActionStatus")
@@ -153,6 +176,7 @@ function ns.TakeShots()
 	C_Timer.After(#SHOTS * STEP, function()
 		running = nil
 		if status and status.RegisterEvent then status:RegisterEvent("SCREENSHOT_SUCCEEDED") end
+		pcall(HideInterface, false) -- in case a step failed in between
 		pcall(Options, hadOptions)
 		Backdrop(false)
 		Demo(false)
