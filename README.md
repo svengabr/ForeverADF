@@ -2,7 +2,7 @@
 
 <img src="https://raw.githubusercontent.com/svengabr/ForeverADF/main/media/logo.png" alt="Forever ADF logo" width="128">
 
-A colleague asked me to bring aDF over from Turtle WoW, where raids use it to see whether Sunder Armor and the curses are on the boss. Forever ADF is that for WoW Forever: a small grid of icons under your nose. An icon is lit while the debuff is on your target and dark while it is missing, and it shows the stacks and the time left.
+Forever ADF is a port of [aDF](https://turtle-wow.fandom.com/wiki/ADF), the armor and debuff frame that raids on Turtle WoW use to see whether Sunder Armor and the curses are on the boss. This is the same idea for WoW Forever: a small grid of icons. An icon is lit while the debuff is on your target and dark while it is missing, and it shows the stacks and the time left.
 
 It keeps working in combat, which on Forever is the hard part. More on that below.
 
@@ -51,9 +51,18 @@ Curse of the Elements, Curse of Shadow and Ignite are not in the list either. Th
 
 Copy the folder into `World of Warcraft/_forever_/Interface/AddOns/` and name it `ForeverADF`.
 
-## Credits
+## Credits and the original
 
-aDF was written by Atreyyo at Vanillagaming.org. Zebouski maintained it for Turtle WoW with contributions by Goffauxs, and Autignem rewrote it as version 4. Forever ADF takes the idea and the look from them. The code is new. How to show debuffs in combat I learned from reading Platynator.
+All credit for the idea goes to aDF and the people who built it:
+
+- Atreyyo wrote the original aDF for the 1.12 client (Vanillagaming.org).
+- Zebouski maintained it for Turtle WoW, with contributions by Goffauxs: [github.com/Zebouski/aDF](https://github.com/Zebouski/aDF) (branch `masterturtle`).
+- Autignem rewrote it as version 4, which is the one Turtle WoW players use today: [github.com/Autignem/aDF](https://github.com/Autignem/aDF).
+- The Turtle WoW wiki has a page on it: [turtle-wow.fandom.com/wiki/ADF](https://turtle-wow.fandom.com/wiki/ADF).
+
+Forever ADF takes the idea and the look from them. The code is new, because the Forever client shares almost nothing with 1.12. How to show debuffs in combat I learned from reading [Platynator](https://www.curseforge.com/wow/addons/platynator).
+
+If you play on Turtle WoW, you want the original, not this.
 
 ## License
 
