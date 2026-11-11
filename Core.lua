@@ -129,7 +129,10 @@ function ns.BuildIndex()
 	end
 
 	for _, def in ipairs(ns.Debuffs) do
-		local entry = { key = def.key, armor = def.armor, default = def.default, names = {} }
+		local entry = {
+			key = def.key, armor = def.armor, default = def.default, names = {},
+			ids = def.ids, reduce = def.reduce, perStack = def.perStack,
+		}
 		for _, id in ipairs(def.ids) do
 			byId[id] = def.key
 			local name = SpellName(id)
@@ -152,7 +155,7 @@ function ns.BuildIndex()
 	for _, custom in ipairs(ns.db.custom) do
 		local key = ns.CustomKey(custom)
 		if not byKey[key] then
-			local entry = { key = key, custom = custom, names = {} }
+			local entry = { key = key, custom = custom, names = {}, ids = { custom.id } }
 			if custom.id then
 				if not byId[custom.id] then byId[custom.id] = key end
 				entry.spellId = custom.id
@@ -237,16 +240,21 @@ end
 -------------------------------------------------------------------------------
 
 -- unit       the unit the frame describes: "target", "targettarget" or nil
--- found      [key] = { stacks, expires, duration } for every tracked debuff on the unit
+-- found      [key] = { id, stacks, expires, duration } for every tracked debuff on the unit
 -- unknown    [key] = true where the client hid the debuffs and the addon cannot tell
--- armor      number, or nil when not available
+-- armor      number, or nil when the client does not hand it out
 -- armorText  what to print for the armor (may be a secret the addon can only pass on)
+-- reduction  armor the active debuffs take off, by the vanilla values
 -- resists    list of numbers in RESIST_SCHOOLS order, or nil
-local state = { found = {}, unknown = {} }
+local state = { found = {}, unknown = {}, reduction = 0 }
 ns.state = state
 
 local inCombat = false
 local lastGUID, lastArmor, lastArmorSet
+
+-- [auraInstanceID] = key for debuffs identified while the client still handed out their names. In combat the
+-- client hides spell ids and names of auras, but the instance id stays readable.
+local instanceKeys = {}
 
 -- The unit to describe: a hostile target, or what a friendly target is fighting (a tank's or healer's target).
 local function PickUnit()
@@ -259,7 +267,51 @@ local function PickUnit()
 end
 
 local function ReadAuraFields(aura)
-	return aura.spellId, aura.name, aura.applications, aura.expirationTime, aura.duration, aura.icon
+	return aura.spellId, aura.name, aura.applications, aura.expirationTime, aura.duration, aura.icon,
+		aura.auraInstanceID
+end
+
+local function Hit(id, stacks, expires, duration)
+	return { id = Plain(id), stacks = Plain(stacks) or 0, expires = Plain(expires), duration = Plain(duration) }
+end
+
+-- Asks the client for one debuff directly. The question itself contains nothing secret, so this can work where
+-- reading the list does not.
+local function Lookup(unit, entry)
+	local getById = C_UnitAuras.GetUnitAuraBySpellID
+	if getById then
+		for _, id in ipairs(entry.ids) do
+			local ok, aura = pcall(getById, unit, id)
+			if ok and not issecretvalue(aura) and aura then
+				local read, _, _, stacks, expires, duration = pcall(ReadAuraFields, aura)
+				if read then return Hit(id, stacks, expires, duration) end
+				return Hit(id)
+			end
+		end
+	end
+	local getByName = C_UnitAuras.GetAuraDataBySpellName
+	if getByName then
+		for name in pairs(entry.names) do
+			local ok, aura = pcall(getByName, unit, name, "HARMFUL")
+			if ok and not issecretvalue(aura) and aura then
+				local read, id, _, stacks, expires, duration = pcall(ReadAuraFields, aura)
+				if read then return Hit(id, stacks, expires, duration) end
+				return Hit()
+			end
+		end
+	end
+	return nil
+end
+
+-- True if the client may be hiding this debuff right now; false if "not found" really means "not there".
+local function MayBeHidden(entry)
+	local check = C_Secrets and C_Secrets.ShouldSpellAuraBeSecret
+	if not check or not entry.spellId then return true end
+	for _, id in ipairs(entry.ids) do
+		local ok, secret = pcall(check, id)
+		if not ok or issecretvalue(secret) or secret then return true end
+	end
+	return false
 end
 
 local function ScanAuras(unit)
@@ -274,64 +326,73 @@ local function ScanAuras(unit)
 			break
 		end
 		if not aura then break end
-		local read, id, name, stacks, expires, duration, icon = pcall(ReadAuraFields, aura)
-		id, name = Plain(id), Plain(name)
-		if not read or (id == nil and name == nil) then
-			restricted = true
+		local read, id, name, stacks, expires, duration, icon, instance = pcall(ReadAuraFields, aura)
+		id, name, instance = Plain(id), Plain(name), Plain(instance)
+		local key
+		if read and (id ~= nil or name ~= nil) then
+			key = (id and byId[id]) or (name and byName[name])
+			if key and instance then instanceKeys[instance] = key end
 		else
-			local key = (id and byId[id]) or (name and byName[name])
-			if key and not found[key] then
-				found[key] = {
-					stacks = Plain(stacks) or 0,
-					expires = Plain(expires),
-					duration = Plain(duration),
-				}
-				-- Learn the icon of the player's own entries the first time the debuff is seen.
-				local entry = ns.byKey[key]
-				icon = Plain(icon)
-				if entry and entry.custom and icon and entry.custom.icon ~= icon and entry.icon == QUESTION_MARK then
-					entry.custom.icon = icon
-					entry.icon = icon
-					ns.iconsChanged = true
-				end
+			restricted = true
+			key = read and instance and instanceKeys[instance] or nil
+		end
+		if key and not found[key] then
+			found[key] = Hit(id, stacks, expires, duration)
+			-- Learn the icon of the player's own entries the first time the debuff is seen.
+			local entry = ns.byKey[key]
+			icon = Plain(icon)
+			if entry and entry.custom and icon and entry.custom.icon ~= icon and entry.icon == QUESTION_MARK then
+				entry.custom.icon = icon
+				entry.icon = icon
+				ns.iconsChanged = true
 			end
 		end
 	end
 
 	if restricted then
-		-- The list could not be read. Ask for each debuff by name; where that fails too, say "unknown" instead
-		-- of claiming the debuff is missing.
-		local getByName = C_UnitAuras.GetAuraDataBySpellName
+		-- Part of the list was hidden. Ask for each missing debuff directly; where that finds nothing and the
+		-- client may be hiding the debuff, say "unknown" instead of claiming it is missing.
 		for _, entry in ipairs(ns.visible) do
 			if not found[entry.key] then
-				local hit
-				if getByName then
-					for name in pairs(entry.names) do
-						local ok, aura = pcall(getByName, unit, name, "HARMFUL")
-						if ok and not issecretvalue(aura) and aura then
-							local read, _, _, stacks, expires, duration = pcall(ReadAuraFields, aura)
-							hit = {
-								stacks = read and Plain(stacks) or 0,
-								expires = read and Plain(expires) or nil,
-								duration = read and Plain(duration) or nil,
-							}
-							break
-						end
-					end
+				local hit = Lookup(unit, entry)
+				if hit then
+					found[entry.key] = hit
+				elseif MayBeHidden(entry) then
+					unknown[entry.key] = true
 				end
-				if hit then found[entry.key] = hit else unknown[entry.key] = true end
 			end
 		end
 	end
 	return found, unknown, restricted
 end
 
+-- Armor the active debuffs take off, by the vanilla values. An unknown rank counts as the highest one.
+local function ArmorReduction(found)
+	local total = 0
+	for key, hit in pairs(found) do
+		local entry = ns.byKey[key]
+		if entry and entry.reduce then
+			local amount = hit.id and entry.reduce[hit.id]
+			if not amount then
+				amount = 0
+				for _, value in pairs(entry.reduce) do amount = math.max(amount, value) end
+			end
+			if entry.perStack then amount = amount * math.max(hit.stacks, 1) end
+			total = total + amount
+		end
+	end
+	return total
+end
+
 local function ReadArmor(unit)
-	local ok, _, effective = pcall(UnitArmor, unit)
+	local ok, base, effective, real = pcall(UnitArmor, unit)
 	if not ok then return nil, nil end
 	if issecretvalue(effective) then return nil, effective end
-	if type(effective) ~= "number" then return nil, nil end
-	return effective, tostring(effective)
+	-- The client answers 0 for units whose armor it does not hand out (enemies, as it turned out).
+	for _, value in ipairs({ effective or 0, Plain(real) or 0, Plain(base) or 0 }) do
+		if type(value) == "number" and value > 0 then return value, tostring(value) end
+	end
+	return nil, nil
 end
 
 local function ReadResists(unit)
@@ -409,8 +470,13 @@ end
 function ns.AnnounceArmor()
 	local unit = state.unit
 	if not unit then return ns.Print(L["Nothing to announce: no attackable target."]) end
-	if not state.armor then return ns.Print(L["Nothing to announce: the client hides this value right now."]) end
-	Send(L["%s has %d armor"]:format(UnitLabel(unit), state.armor))
+	if state.armor then
+		Send(L["%s has %d armor"]:format(UnitLabel(unit), state.armor))
+	elseif next(state.unknown) then
+		ns.Print(L["Nothing to announce: the client hides this value right now."])
+	else
+		Send(L["%s: armor reduced by %d"]:format(UnitLabel(unit), state.reduction))
+	end
 end
 
 function ns.AnnounceDebuff(key)
@@ -441,6 +507,20 @@ local function OnArmorRise(unit, before, after, hadBefore, found)
 		message = message .. L[" (dropped: %s)"]:format(table.concat(dropped, ", "))
 	end
 	Send(message, true)
+end
+
+-- Without an armor value: an armor debuff that was on the mob is gone.
+local function OnArmorDebuffsLost(unit, hadBefore, found, unknown)
+	if not ns.db.announceDrops then return end
+	local dropped = {}
+	for key in pairs(hadBefore) do
+		if not found[key] and not unknown[key] and ns.byKey[key] then
+			dropped[#dropped + 1] = ns.byKey[key].chatName
+		end
+	end
+	if #dropped == 0 then return end
+	table.sort(dropped)
+	Send(L["%s lost: %s"]:format(UnitLabel(unit), table.concat(dropped, ", ")), true)
 end
 
 -------------------------------------------------------------------------------
@@ -474,14 +554,25 @@ function ns.Update()
 		state.resists = ns.db.showResists and ReadResists(unit) or nil
 
 		-- Only for the direct target: "targettarget" changes without an event, so two mobs can get mixed up.
+		state.reduction = ArmorReduction(state.found)
 		local guid = unit == "target" and Plain(Try(UnitGUID, unit)) or nil
-		if guid and state.armor then
+		if guid then
 			local armorSet = {}
 			for key in pairs(state.found) do
 				if ns.byKey[key] and ns.byKey[key].armor then armorSet[key] = true end
 			end
-			if guid == lastGUID and lastArmor and state.armor > lastArmor then
-				OnArmorRise(unit, lastArmor, state.armor, lastArmorSet, state.found)
+			if guid == lastGUID and lastArmorSet then
+				if state.armor and lastArmor then
+					if state.armor > lastArmor then
+						OnArmorRise(unit, lastArmor, state.armor, lastArmorSet, state.found)
+					end
+				elseif not state.armor then
+					OnArmorDebuffsLost(unit, lastArmorSet, state.found, state.unknown)
+				end
+				-- A debuff the client hides for a moment was not lost; keep remembering it.
+				for key in pairs(lastArmorSet) do
+					if state.unknown[key] then armorSet[key] = true end
+				end
 			end
 			lastGUID, lastArmor, lastArmorSet = guid, state.armor, armorSet
 		else
@@ -489,7 +580,7 @@ function ns.Update()
 		end
 	else
 		state.found, state.unknown, state.restricted = {}, {}, false
-		state.armor, state.armorText, state.resists = nil, nil, nil
+		state.armor, state.armorText, state.resists, state.reduction = nil, nil, nil, 0
 		lastGUID, lastArmor, lastArmorSet = nil, nil, nil
 	end
 
@@ -554,10 +645,56 @@ events:SetScript("OnEvent", function(self, event, arg1)
 		inCombat = false
 		ns.Update()
 	else
-		if event == "PLAYER_TARGET_CHANGED" then lastGUID, lastArmor, lastArmorSet = nil, nil, nil end
+		if event == "PLAYER_TARGET_CHANGED" then
+			lastGUID, lastArmor, lastArmorSet = nil, nil, nil
+			instanceKeys = {}
+		end
 		ns.Update()
 	end
 end)
+
+-------------------------------------------------------------------------------
+-- /adf debug: what the client hands out about the target right now. For bug reports.
+-------------------------------------------------------------------------------
+
+local function Show(value)
+	if issecretvalue(value) then return "<secret>" end
+	return tostring(value)
+end
+
+function ns.Debug()
+	local unit = state.unit or "target"
+	local secrets = C_Secrets or {}
+	ns.Print(("debug %s | combat %s | aurasSecret %s | statsSecret %s | restrictions %s"):format(unit,
+		tostring(inCombat), Show(Try(secrets.ShouldAurasBeSecret)), Show(Try(secrets.ShouldUnitStatsBeSecret)),
+		Show(Try(secrets.HasSecretRestrictions))))
+	local ok, a, b, c, d = pcall(UnitArmor, unit)
+	print(("  UnitArmor: %s %s %s %s %s"):format(tostring(ok), Show(a), Show(b), Show(c), Show(d)))
+	for index = 1, 40 do
+		local got, aura = pcall(C_UnitAuras.GetAuraDataByIndex, unit, index, "HARMFUL")
+		if not got then
+			print("  aura " .. index .. ": error " .. tostring(aura))
+			break
+		end
+		if issecretvalue(aura) then
+			print("  aura " .. index .. ": <secret table>")
+			break
+		end
+		if not aura then break end
+		local read, id, name, stacks, _, _, _, instance = pcall(ReadAuraFields, aura)
+		print(("  aura %d: read %s id %s name %s stacks %s instance %s indexSecret %s"):format(index, tostring(read),
+			Show(id), Show(name), Show(stacks), Show(instance),
+			Show(Try(secrets.ShouldUnitAuraIndexBeSecret, unit, index, "HARMFUL"))))
+	end
+	for _, entry in ipairs(ns.visible) do
+		local id = entry.ids[1]
+		local hit = Lookup(unit, entry)
+		print(("  %s (%s): secrecy %s shouldBeSecret %s lookup %s state %s"):format(entry.label, tostring(id),
+			Show(id and Try(secrets.GetSpellAuraSecrecy, id)), Show(id and Try(secrets.ShouldSpellAuraBeSecret, id)),
+			hit and "found" or "nil",
+			state.found[entry.key] and "found" or state.unknown[entry.key] and "unknown" or "missing"))
+	end
+end
 
 -------------------------------------------------------------------------------
 -- Slash command
@@ -582,6 +719,8 @@ SlashCmdList["FOREVERADF"] = function(message)
 		ns.db.locked = command == "lock" and not ns.db.locked
 		ns.Refresh()
 		ns.Print(ns.db.locked and L["Frame locked."] or L["Frame unlocked. Hold Shift and drag to move it."])
+	elseif command == "debug" then
+		ns.Debug()
 	elseif command == "reset" then
 		ns.ResetPosition()
 		ns.Print(L["Position reset."])

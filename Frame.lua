@@ -84,7 +84,10 @@ function ns.CreateHUD()
 			local reduction, level = ns.ArmorReduction(state.armor)
 			GameTooltip:AddLine(L["Physical damage reduction against level %d: %.1f%%"]:format(level, reduction), 1, 1, 1, true)
 		else
-			GameTooltip:AddLine(L["The client does not hand out this target's armor right now."], 0.7, 0.7, 0.7, true)
+			GameTooltip:AddLine(L["The client does not hand out this target's armor."], 0.7, 0.7, 0.7, true)
+		end
+		if state.unit then
+			GameTooltip:AddLine(L["Armor taken off by the active debuffs: %d"]:format(state.reduction), 0.4, 1, 0.4, true)
 		end
 		GameTooltip:AddLine(" ")
 		GameTooltip:AddLine(L["Right-click: announce in chat"], 0.5, 0.8, 1)
@@ -212,10 +215,16 @@ function ns.CreateHUD()
 			header.armor:SetTextColor(0.5, 0.5, 0.5)
 			header.armor:SetText("aDF")
 		else
-			header.armor:SetTextColor(1, 1, 1)
 			-- armorText can be a secret: the font string may show it, the addon may not look at it
-			if state.armorText == nil or not pcall(header.armor.SetText, header.armor, state.armorText) then
-				header.armor:SetText("?")
+			if state.armorText ~= nil and pcall(header.armor.SetText, header.armor, state.armorText) then
+				header.armor:SetTextColor(1, 1, 1)
+			elseif state.reduction > 0 then
+				-- no armor value from the client: show what the debuffs take off
+				header.armor:SetTextColor(0.4, 1, 0.4)
+				header.armor:SetText("-" .. state.reduction)
+			else
+				header.armor:SetTextColor(0.6, 0.6, 0.6)
+				header.armor:SetText("-0")
 			end
 		end
 

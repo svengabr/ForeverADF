@@ -8,7 +8,7 @@ Forever client.
 
 ## Features
 
-- **Armor** of your target as a number. Hover it for the physical damage reduction against your level.
+- **Armor**: how much armor the active debuffs take off your target (the client keeps the real value to itself).
 - **Resistances** (fire, nature, frost, shadow, arcane) in a line above the armor, optional.
 - **Debuff icons**: bright when the debuff is on the target, dimmed when it is missing, with stack count and
   remaining time.
@@ -40,6 +40,7 @@ Demoralizing Shout, Demoralizing Roar, Thunder Clap, Hunter's Mark, Curse of Wea
 | `/adf hide` | Hide the frame |
 | `/adf lock` | Lock or unlock the position |
 | `/adf reset` | Put the frame back to its default position |
+| `/adf debug` | Print what the client hands out about the target |
 
 - **Move**: hold Shift and drag the frame with the left mouse button.
 - **Announce**: right-click the armor number or a debuff icon.
@@ -53,13 +54,15 @@ Copy the folder into `World of Warcraft/_forever_/Interface/AddOns/` and name it
 
 ## Good to know
 
-- The Forever client can hide a unit's debuffs and stats from addons in some situations ("secret values").
-  Forever ADF never guesses then: icons show a `?` instead of "missing", and the armor is only displayed, not
-  announced.
-- Whether the client hands out the armor of every enemy is decided by the game, not the addon. Where it does
-  not, the armor reads `0` or `?`.
+- **No real armor value for enemies.** The Forever client does not hand out an enemy's armor to addons. The
+  frame shows how much armor the active debuffs take off instead (vanilla values, e.g. `-1525`). Should the
+  client hand out an armor value, the frame shows that.
+- **Combat hides debuff names.** In combat the client hides which debuffs a target has. Forever ADF remembers
+  the ones it identified before combat and asks the client for each tracked debuff directly. Where it still
+  cannot tell, the icon shows a `?` instead of claiming the debuff is missing.
 - Say and yell need a click outside of instances. The automatic "armor went back up" message therefore goes to
   party or raid only; without a group it is printed to your own chat.
+- `/adf debug` prints what the client hands out about your target. Add its output to bug reports.
 
 ## Differences to aDF
 

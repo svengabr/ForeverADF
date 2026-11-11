@@ -9,6 +9,7 @@ globals = { "ForeverADF", "ForeverADFCharDB", "SlashCmdList", "SLASH_FOREVERADF1
 read_globals = {
 	"C_ChatInfo",
 	"C_PaperDollInfo",
+	"C_Secrets",
 	"C_Spell",
 	"C_Timer",
 	"C_UnitAuras",
