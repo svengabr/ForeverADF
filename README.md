@@ -9,7 +9,8 @@ Forever client.
 ## Features
 
 - **Armor**: how much armor the active debuffs take off your target (the client keeps the real value to itself).
-- **Resistances** (fire, nature, frost, shadow, arcane) in a line above the armor, optional.
+- **Resistances** (fire, nature, frost, shadow, arcane) in a line above the armor, optional. The Forever client
+  currently answers 0 for every enemy, so the line stays hidden until the client hands out real values.
 - **Debuff icons**: bright when the debuff is on the target, dimmed when it is missing, with stack count and
   remaining time.
 - **Friendly target?** Then the frame describes what your target is attacking, so healers see the boss through

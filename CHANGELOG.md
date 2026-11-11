@@ -2,6 +2,7 @@
 
 ## 1.2.2
 
+- The resistance line is hidden while the client answers 0 for every school, which it does for all enemies.
 - Options window: wider debuff columns, no more overlapping label, button and tooltip.
 - Built-in debuffs whose spell does not exist in the client (on Forever: Curse of the Elements, Curse of Shadow,
   Ignite) are left out of the list. Add them by their Forever spell ID if they exist under another one.

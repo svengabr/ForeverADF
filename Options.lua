@@ -186,7 +186,7 @@ local function Build()
 	local displayChecks = {
 		{ "enabled", L["Show the frame"] },
 		{ "showArmor", L["Show armor"] },
-		{ "showResists", L["Show resistances"] },
+		{ "showResists", L["Show resistances"], L["The Forever client currently answers 0 for every enemy resistance. The line only appears when the client hands out real values."] },
 		{ "showTimers", L["Show remaining time"] },
 		{ "hideOOC", L["Hide out of combat"] },
 		{ "hideSolo", L["Hide when not in a group"] },

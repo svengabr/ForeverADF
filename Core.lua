@@ -429,13 +429,17 @@ local function ReadArmor(unit)
 end
 
 local function ReadResists(unit)
-	local resists = {}
+	local resists, any = {}, false
 	for index, school in ipairs(RESIST_SCHOOLS) do
 		local ok, _, total = pcall(UnitResistance, unit, school)
 		total = ok and Plain(total) or nil
 		if type(total) ~= "number" then return nil end
 		resists[index] = total
+		if total ~= 0 then any = true end
 	end
+	-- The client answers 0 for every enemy resistance (seen in the client), like it does for armor. A row of
+	-- zeros would look like real data, so it only counts once there is a value.
+	if not any then return nil end
 	return resists
 end
 
