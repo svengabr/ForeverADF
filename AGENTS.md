@@ -20,6 +20,14 @@ WoW: Forever. Written from scratch; the originals carry no license, so do not pa
   classes and spell ranks, level 60).
 - Secret restrictions exist on Forever. Never compare or do maths on an API value without `ns.Plain`. A font
   string may show a secret (`SetText` in a `pcall`), the addon may not look at it.
+- In combat (`C_Secrets.ShouldAurasBeSecret()` true) `C_UnitAuras.GetAuraDataByIndex` raises "Auras cannot be
+  accessed when secret", and the by-id / by-name lookups return nil (seen in the client). `UnitArmor` of an enemy
+  is `0 0 0 0` out of combat and secret in combat.
+- The way to show auras in combat is the client's `AuraContainer` (`CustomAuraContainerTemplate`):
+  `AddAuraSlot(key, "HARMFUL", { initializeFrame, candidateFilters = { includeSpellIDs } })`, `SetUnit`,
+  `SetEnabled`, `SetAuraSlotEnabled`; on the slot frame `SetIcon`, `SetApplicationCount`, `SetDurationText`.
+  Recipe taken from Platynator (`Display/Auras/AurasNext.lua`). Slot frames may only be moved out of combat.
+  `Frame.lua` lays one slot over each of the addon's own (dimmed) icons.
 - Unit tokens like `targettarget` can be refused by aura and stat functions; every such call is in a `pcall`.
 - Debuffs are matched by spell id first, then by the client's localized spell name. A name shared by two entries
   (both "Shadow Vulnerability" debuffs) is matched by id only.

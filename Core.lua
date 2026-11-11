@@ -472,7 +472,7 @@ function ns.AnnounceArmor()
 	if not unit then return ns.Print(L["Nothing to announce: no attackable target."]) end
 	if state.armor then
 		Send(L["%s has %d armor"]:format(UnitLabel(unit), state.armor))
-	elseif next(state.unknown) then
+	elseif state.armorUnknown then
 		ns.Print(L["Nothing to announce: the client hides this value right now."])
 	else
 		Send(L["%s: armor reduced by %d"]:format(UnitLabel(unit), state.reduction))
@@ -541,6 +541,7 @@ function ns.Update()
 	local unit = PickUnit()
 	if unit and Try(UnitIsDead, unit) then unit = nil end
 	state.unit = unit
+	ns.HUD:BindUnit(unit)
 
 	if not ShouldShow() then
 		ns.HUD:Hide()
@@ -555,6 +556,10 @@ function ns.Update()
 
 		-- Only for the direct target: "targettarget" changes without an event, so two mobs can get mixed up.
 		state.reduction = ArmorReduction(state.found)
+		state.armorUnknown = false
+		for key in pairs(state.unknown) do
+			if ns.byKey[key] and ns.byKey[key].armor then state.armorUnknown = true end
+		end
 		local guid = unit == "target" and Plain(Try(UnitGUID, unit)) or nil
 		if guid then
 			local armorSet = {}
@@ -581,6 +586,7 @@ function ns.Update()
 	else
 		state.found, state.unknown, state.restricted = {}, {}, false
 		state.armor, state.armorText, state.resists, state.reduction = nil, nil, nil, 0
+		state.armorUnknown = false
 		lastGUID, lastArmor, lastArmorSet = nil, nil, nil
 	end
 
@@ -637,7 +643,10 @@ events:SetScript("OnEvent", function(self, event, arg1)
 	elseif event == "UNIT_AURA" then
 		if arg1 == "target" or state.unit == "targettarget" then ns.Update() end
 	elseif event == "UNIT_TARGET" then
-		if arg1 == "target" then ns.Update() end
+		if arg1 == "target" then
+			if ns.HUD then ns.HUD:BindUnit(state.unit, true) end
+			ns.Update()
+		end
 	elseif event == "PLAYER_REGEN_DISABLED" then
 		inCombat = true
 		ns.Update()
@@ -647,11 +656,13 @@ events:SetScript("OnEvent", function(self, event, arg1)
 		end
 	elseif event == "PLAYER_REGEN_ENABLED" then
 		inCombat = false
+		if ns.HUD and ns.HUD.pendingLayout then ns.HUD:Layout() end
 		ns.Update()
 	else
 		if event == "PLAYER_TARGET_CHANGED" then
 			lastGUID, lastArmor, lastArmorSet = nil, nil, nil
 			instanceKeys = {}
+			if ns.HUD then ns.HUD:BindUnit(nil, true) end -- "target" is another mob now: bind again in Update
 		end
 		ns.Update()
 	end
@@ -673,7 +684,8 @@ function ns.Debug()
 		tostring(inCombat), Show(Try(secrets.ShouldAurasBeSecret)), Show(Try(secrets.ShouldUnitStatsBeSecret)),
 		Show(Try(secrets.HasSecretRestrictions))))
 	local ok, a, b, c, d = pcall(UnitArmor, unit)
-	print(("  UnitArmor: %s %s %s %s %s"):format(tostring(ok), Show(a), Show(b), Show(c), Show(d)))
+	print(("  UnitArmor: %s %s %s %s %s | container %s bound %s"):format(tostring(ok), Show(a), Show(b), Show(c),
+		Show(d), tostring(ns.HUD.container ~= nil), tostring(ns.HUD.boundUnit)))
 	for index = 1, 40 do
 		local got, aura = pcall(C_UnitAuras.GetAuraDataByIndex, unit, index, "HARMFUL")
 		if not got then
@@ -693,10 +705,10 @@ function ns.Debug()
 	for _, entry in ipairs(ns.visible) do
 		local id = entry.ids[1]
 		local hit = Lookup(unit, entry)
-		print(("  %s (%s): secrecy %s shouldBeSecret %s lookup %s state %s"):format(entry.label, tostring(id),
-			Show(id and Try(secrets.GetSpellAuraSecrecy, id)), Show(id and Try(secrets.ShouldSpellAuraBeSecret, id)),
-			hit and "found" or "nil",
-			state.found[entry.key] and "found" or state.unknown[entry.key] and "unknown" or "missing"))
+		print(("  %s (%s): shouldBeSecret %s lookup %s state %s | slot %s"):format(entry.label, tostring(id),
+			Show(id and Try(secrets.ShouldSpellAuraBeSecret, id)), hit and "found" or "nil",
+			state.found[entry.key] and "found" or state.unknown[entry.key] and "unknown" or "missing",
+			ns.HUD:SlotInfo(entry.key)))
 	end
 end
 

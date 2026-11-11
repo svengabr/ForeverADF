@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.1.0
+
+- Debuff icons now work in combat. The client hides a target's debuffs from addons while you fight, so the icons
+  are drawn by the game's own aura container: one slot per tracked debuff, filled in by the client with icon,
+  stacks and remaining time.
+- In combat the armor line shows `?`, because the addon cannot add up debuffs it is not allowed to read.
+  Announcements of single debuffs and of the armor total work out of combat only.
+- Debuffs added by name only (no spell ID) cannot get a slot and show `?` in combat. Add them by spell ID.
+
 ## 1.0.1
 
 - The client does not hand out an enemy's armor. Instead of a false `0`, the frame now shows how much armor the
