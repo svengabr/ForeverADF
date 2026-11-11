@@ -641,6 +641,10 @@ events:SetScript("OnEvent", function(self, event, arg1)
 	elseif event == "PLAYER_REGEN_DISABLED" then
 		inCombat = true
 		ns.Update()
+		if ns.debugArmed then
+			ns.debugArmed = nil
+			C_Timer.After(4, ns.Debug)
+		end
 	elseif event == "PLAYER_REGEN_ENABLED" then
 		inCombat = false
 		ns.Update()
@@ -721,6 +725,11 @@ SlashCmdList["FOREVERADF"] = function(message)
 		ns.Print(ns.db.locked and L["Frame locked."] or L["Frame unlocked. Hold Shift and drag to move it."])
 	elseif command == "debug" then
 		ns.Debug()
+		if not inCombat then
+			-- typing mid-fight is awkward: repeat the dump by itself in the next fight
+			ns.debugArmed = true
+			ns.Print("debug: I will print this again 4 seconds into your next fight.")
+		end
 	elseif command == "reset" then
 		ns.ResetPosition()
 		ns.Print(L["Position reset."])
