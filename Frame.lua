@@ -59,7 +59,6 @@ function ns.CreateHUD()
 	-- the spell ids a slot is for, and the client itself shows the icon, stacks and time while the debuff is
 	-- up. Each slot sits on top of the addon's own (dimmed) icon.
 	hud.slots = {} -- [key] = slot frame, or false where none could be made
-	hud.hooksProven = false -- true once a slot's OnShow/OnHide has been seen to fire
 	local made, container = pcall(CreateFrame, "AuraContainer", nil, hud, "CustomAuraContainerTemplate")
 	if made and container and container.AddAuraSlot then
 		hud.container = container
@@ -226,19 +225,6 @@ function ns.CreateHUD()
 		local formatter = DurationFormatter()
 		if formatter then Safe(frame, "SetDurationText", frame.Timer, { textFormatter = formatter }) end
 
-		-- Second way to learn whether the slot is lit, should the client refuse IsShown in combat: be told
-		-- when it appears and disappears.
-		local hookedShow = pcall(frame.HookScript, frame, "OnShow", function(self)
-			self.adfLit = true
-			hud.hooksProven = true
-		end)
-		local hookedHide = pcall(frame.HookScript, frame, "OnHide", function(self)
-			self.adfLit = false
-			hud.hooksProven = true
-		end)
-		frame.adfHooked = hookedShow and hookedHide
-		if frame.adfHooked then frame.adfLit = false end
-
 		-- clicks and tooltips belong to the addon's own icon below
 		Safe(frame, "SetCollapsesLayout", true)
 		Safe(frame, "EnableMouse", false)
@@ -282,11 +268,9 @@ function ns.CreateHUD()
 		local slot = self.slots[key]
 		if not slot or self.boundUnit ~= unit then return nil end
 		local ok, shown = pcall(slot.IsShown, slot)
-		if not ok or ns.IsSecret(shown) then
-			-- not allowed to ask: go by the show/hide notices, once they have been seen to arrive at all
-			if slot.adfHooked and self.hooksProven then return slot.adfLit end
-			return nil
-		end
+		-- In combat the client refuses every question about a slot frame (seen in the client: IsShown,
+		-- IsVisible, GetAlpha and the text of its font strings all raise errors, HookScript is refused).
+		if not ok or ns.IsSecret(shown) then return nil end
 		if not shown then return false end
 		local okAlpha, alpha = pcall(slot.GetAlpha, slot)
 		if okAlpha and not ns.IsSecret(alpha) and type(alpha) == "number" and alpha <= 0 then return false end
@@ -308,10 +292,8 @@ function ns.CreateHUD()
 			if ns.IsSecret(value) then return "<secret>" end
 			return tostring(value)
 		end
-		return ("shown %s visible %s alpha %s icon %s count %s timer %s | hooked %s lit %s proven %s"):format(
-			Probe(slot, "IsShown"), Probe(slot, "IsVisible"), Probe(slot, "GetAlpha"), Probe(slot.Icon, "GetTexture"),
-			Probe(slot.Count, "GetText"), Probe(slot.Timer, "GetText"),
-			tostring(slot.adfHooked), tostring(slot.adfLit), tostring(self.hooksProven))
+		return ("shown %s visible %s alpha %s count %s"):format(Probe(slot, "IsShown"), Probe(slot, "IsVisible"),
+			Probe(slot, "GetAlpha"), Probe(slot.Count, "GetText"))
 	end
 
 	---------------------------------------------------------------------------

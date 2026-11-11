@@ -1,10 +1,12 @@
 # Changelog
 
-## 1.2.0
+## 1.2.1
 
-- In combat the addon now looks at whether the game is showing a debuff in its slot. With that it can tell
-  active from missing again, show the armor reduction (marked `~` because rank and stacks stay hidden) and
-  announce debuffs in chat during a fight.
+- Out of combat the addon may read whether a slot is lit, in combat the client refuses (tested in the client).
+  So in combat the icons work, and the armor line shows `?`; the total and the chat announcements are back as
+  soon as the fight ends.
+- Where a debuff's rank is hidden, the estimate assumes the highest rank you know yourself instead of the
+  highest in the game.
 
 ## 1.1.1
 

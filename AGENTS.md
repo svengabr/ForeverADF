@@ -28,6 +28,9 @@ WoW: Forever. Written from scratch; the originals carry no license, so do not pa
   `SetEnabled`, `SetAuraSlotEnabled`; on the slot frame `SetIcon`, `SetApplicationCount`, `SetDurationText`.
   Recipe taken from Platynator (`Display/Auras/AurasNext.lua`). Slot frames may only be moved out of combat.
   `Frame.lua` lays one slot over each of the addon's own (dimmed) icons.
+- In combat a slot frame answers nothing: `IsShown`, `IsVisible`, `GetAlpha`, `GetTexture` of its icon and
+  `GetText` of its font strings raise errors, `HookScript("OnShow")` is refused (all tested in the client). There
+  is no way for the addon to know in combat which debuffs are up; do not try again.
 - Unit tokens like `targettarget` can be refused by aura and stat functions; every such call is in a `pcall`.
 - Debuffs are matched by spell id first, then by the client's localized spell name. A name shared by two entries
   (both "Shadow Vulnerability" debuffs) is matched by id only.
