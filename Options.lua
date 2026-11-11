@@ -5,7 +5,7 @@ local L = ns.L
 local GOLD = { 1, 0.82, 0 }
 local ROWS_PER_COLUMN = 15
 local ROW_HEIGHT = 22
-local COLUMN_WIDTH = 290
+local COLUMN_WIDTH = 315
 
 local window
 local checks, sliders, debuffRows = {}, {}, {}
@@ -156,7 +156,7 @@ end
 local function Build()
 	window = CreateFrame("Frame", "ForeverADFOptions", UIParent, "BackdropTemplate")
 	window:Hide()
-	window:SetSize(870, 480)
+	window:SetSize(900, 480)
 	window:SetPoint("CENTER")
 	window:SetFrameStrata("DIALOG")
 	window:SetToplevel(true)

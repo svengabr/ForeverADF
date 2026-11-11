@@ -11,9 +11,16 @@ and chat) and makes two pictures from it:
                   read from the second picture. The cut-out is enlarged to 1920x1080.
   02-options.jpg  the options with the frame above them, centred on the sheet's colour, not enlarged.
 
+Options:
+
+  --shift X Y     move the world cut-out by X and Y screenshot pixels (negative: left, up), to get the mob and
+                  the frame into the picture together
+  --only NAME     build only "ingame" or "options"; the other picture and its screenshots in src/ stay
+
 Nothing is retouched; the debuffs in the pictures are the made-up ones /adf shots shows. The folder can also
 come from the environment variable ADF_SCREENSHOTS. Needs Pillow and numpy.
 """
+import argparse
 import os
 import re
 import shutil
@@ -36,7 +43,7 @@ def shot_names():
     return re.findall(r'^\s*\{ "(\d\d-[a-z-]+)",', lua, re.M)
 
 
-def collect(folder):
+def collect(folder, wanted):
     names = shot_names()
     files = [os.path.join(folder, f) for f in os.listdir(folder) if f.lower().endswith((".jpg", ".png", ".tga"))]
     files.sort(key=os.path.getmtime)
@@ -54,6 +61,9 @@ def collect(folder):
     os.makedirs(SRC, exist_ok=True)
     out = {}
     for name, path in zip(names, run):
+        if name not in wanted:
+            out[name] = os.path.join(SRC, name + ".jpg")
+            continue
         target = os.path.join(SRC, name + os.path.splitext(path)[1].lower())
         shutil.copy2(path, target)
         out[name] = target
@@ -78,7 +88,7 @@ def save(img, name):
     print(os.path.relpath(path, ROOT))
 
 
-def ingame(world_path, frame_path):
+def ingame(world_path, frame_path, shift):
     world = Image.open(world_path)
     x0, y0, x1, y1, _ = content_box(Image.open(frame_path))
     width = min(world.width, max(960, round((x1 - x0) * ZOOM)))
@@ -88,8 +98,8 @@ def ingame(world_path, frame_path):
         width = round(height * W / H)
     # the frame sits in the lower middle of the picture, the mob it describes above it
     cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
-    left = min(max(0, round(cx - width / 2)), world.width - width)
-    top = min(max(0, round(cy - height * 0.66)), world.height - height)
+    left = min(max(0, round(cx - width / 2) + shift[0]), world.width - width)
+    top = min(max(0, round(cy - height * 0.66) + shift[1]), world.height - height)
     cut = world.crop((left, top, left + width, top + height))
     print("world cut-out %d x %d at %d,%d (%d%%)" % (width, height, left, top, round(100 * W / width)))
     save(cut.resize((W, H), Image.LANCZOS), "01-ingame.jpg")
@@ -109,12 +119,20 @@ def options(path):
 
 
 def main():
-    folder = sys.argv[1] if len(sys.argv) > 1 else os.environ.get("ADF_SCREENSHOTS")
-    if not folder or not os.path.isdir(folder):
+    parser = argparse.ArgumentParser(description="Builds the gallery images from one /adf shots run.")
+    parser.add_argument("folder", nargs="?", default=os.environ.get("ADF_SCREENSHOTS"))
+    parser.add_argument("--shift", nargs=2, type=int, default=(0, 0), metavar=("X", "Y"))
+    parser.add_argument("--only", choices=("ingame", "options"))
+    args = parser.parse_args()
+    if not args.folder or not os.path.isdir(args.folder):
         sys.exit("Give the game's Screenshots folder as argument (or in ADF_SCREENSHOTS).")
-    shots = collect(folder)
-    ingame(shots["01-world"], shots["02-frame"])
-    options(shots["03-options"])
+    wanted = {"ingame": ("01-world", "02-frame"), "options": ("03-options",)}
+    names = wanted[args.only] if args.only else wanted["ingame"] + wanted["options"]
+    shots = collect(args.folder, names)
+    if args.only != "options":
+        ingame(shots["01-world"], shots["02-frame"], args.shift)
+    if args.only != "ingame":
+        options(shots["03-options"])
 
 
 if __name__ == "__main__":
