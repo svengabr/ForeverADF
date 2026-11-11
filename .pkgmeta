@@ -1,0 +1,12 @@
+package-as: ForeverADF
+
+manual-changelog:
+  filename: CHANGELOG.md
+  markup-type: markdown
+
+ignore:
+  - .gitignore
+  - .luacheckrc
+  - .github
+  - .pkgmeta
+  - AGENTS.md

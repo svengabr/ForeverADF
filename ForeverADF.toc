@@ -3,7 +3,12 @@
 ## Notes: Debuff frame for WoW: Forever. Shows at a glance which raid debuffs are on your target (Sunder Armor, Faerie Fire, curses ...), in and out of combat. A port of the Turtle WoW addon aDF.
 ## Notes-deDE: Debuff-Anzeige für WoW: Forever. Zeigt auf einen Blick, welche Raid-Debuffs auf deinem Ziel sind (Rüstung zerreißen, Feenfeuer, Flüche ...), im Kampf und außerhalb. Eine Portierung des Turtle-WoW-Addons aDF.
 ## Author: Sven
-## Version: 2.0.0
+#@debug@
+## Version: dev
+#@end-debug@
+#@non-debug@
+# ## Version: @project-version@
+#@end-non-debug@
 ## SavedVariablesPerCharacter: ForeverADFCharDB
 ## IconTexture: Interface\Icons\Ability_Warrior_Sunder
 ## X-License: GPL-3.0-or-later
