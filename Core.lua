@@ -354,11 +354,20 @@ local function ScanAuras(unit)
 		-- client may be hiding the debuff, say "unknown" instead of claiming it is missing.
 		for _, entry in ipairs(ns.visible) do
 			if not found[entry.key] then
-				local hit = Lookup(unit, entry)
-				if hit then
-					found[entry.key] = hit
-				elseif MayBeHidden(entry) then
-					unknown[entry.key] = true
+				-- The client draws the debuff into the entry's slot; whether that slot is showing is the one
+				-- thing the addon can still see in combat. Rank and (often) stacks stay hidden.
+				local active, stacks = ns.HUD:SlotActive(entry.key, unit)
+				if active then
+					found[entry.key] = Hit(nil, stacks)
+					found[entry.key].fromSlot = true
+					found[entry.key].stacksUnknown = stacks == nil
+				elseif active == nil then
+					local hit = Lookup(unit, entry)
+					if hit then
+						found[entry.key] = hit
+					elseif MayBeHidden(entry) then
+						unknown[entry.key] = true
+					end
 				end
 			end
 		end
@@ -366,9 +375,10 @@ local function ScanAuras(unit)
 	return found, unknown, restricted
 end
 
--- Armor the active debuffs take off, by the vanilla values. An unknown rank counts as the highest one.
+-- Armor the active debuffs take off, by the vanilla values. An unknown rank counts as the highest one and
+-- unknown stacks as one; the second return says that the total is such an estimate.
 local function ArmorReduction(found)
-	local total = 0
+	local total, estimate = 0, false
 	for key, hit in pairs(found) do
 		local entry = ns.byKey[key]
 		if entry and entry.reduce then
@@ -376,12 +386,16 @@ local function ArmorReduction(found)
 			if not amount then
 				amount = 0
 				for _, value in pairs(entry.reduce) do amount = math.max(amount, value) end
+				if next(entry.reduce, next(entry.reduce)) then estimate = true end -- more than one rank
 			end
-			if entry.perStack then amount = amount * math.max(hit.stacks, 1) end
+			if entry.perStack then
+				amount = amount * math.max(hit.stacks, 1)
+				if hit.stacksUnknown then estimate = true end
+			end
 			total = total + amount
 		end
 	end
-	return total
+	return total, estimate
 end
 
 local function ReadArmor(unit)
@@ -475,7 +489,8 @@ function ns.AnnounceArmor()
 	elseif state.armorUnknown then
 		ns.Print(L["Nothing to announce: the client hides this value right now."])
 	else
-		Send(L["%s: armor reduced by %d"]:format(UnitLabel(unit), state.reduction))
+		local text = state.estimate and L["%s: armor reduced by about %d"] or L["%s: armor reduced by %d"]
+		Send(text:format(UnitLabel(unit), state.reduction))
 	end
 end
 
@@ -555,7 +570,7 @@ function ns.Update()
 		state.resists = ns.db.showResists and ReadResists(unit) or nil
 
 		-- Only for the direct target: "targettarget" changes without an event, so two mobs can get mixed up.
-		state.reduction = ArmorReduction(state.found)
+		state.reduction, state.estimate = ArmorReduction(state.found)
 		state.armorUnknown = false
 		for key in pairs(state.unknown) do
 			if ns.byKey[key] and ns.byKey[key].armor then state.armorUnknown = true end

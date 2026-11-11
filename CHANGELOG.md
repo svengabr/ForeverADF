@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2.0
+
+- In combat the addon now looks at whether the game is showing a debuff in its slot. With that it can tell
+  active from missing again, show the armor reduction (marked `~` because rank and stacks stay hidden) and
+  announce debuffs in chat during a fight.
+
 ## 1.1.1
 
 - The armor line no longer shows `0` in combat; it shows `?` there, as intended.

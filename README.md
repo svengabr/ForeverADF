@@ -58,9 +58,9 @@ Copy the folder into `World of Warcraft/_forever_/Interface/AddOns/` and name it
   frame shows how much armor the active debuffs take off instead (vanilla values, e.g. `-1525`). Should the
   client hand out an armor value, the frame shows that.
 - **Combat hides debuffs from addons.** While you fight, the client does not let addons read a target's
-  debuffs. The icons still work, because the game draws them itself (its aura container, one slot per spell ID).
-  What the addon cannot do in combat: add up the armor reduction (the armor line shows `?`) and announce
-  debuffs in chat. Both work again out of combat.
+  debuffs. The icons still work, because the game draws them itself (its aura container, one slot per spell ID),
+  and the addon can see whether a slot is lit. Rank and stacks stay hidden in combat, so the armor reduction is
+  an estimate there (highest rank, one stack) and is marked with `~`.
 - Debuffs you add by name only show `?` in combat. Add them by spell ID and they work like the built-in ones.
 - Say and yell need a click outside of instances. The automatic "armor went back up" message therefore goes to
   party or raid only; without a group it is printed to your own chat.

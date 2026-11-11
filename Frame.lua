@@ -127,6 +127,9 @@ function ns.CreateHUD()
 			GameTooltip:AddLine(L["In combat the client hides the debuffs from addons, so there is no total. The icons below still show what is active."], 1, 0.8, 0.3, true)
 		elseif state.unit then
 			GameTooltip:AddLine(L["Armor taken off by the active debuffs: %d"]:format(state.reduction), 0.4, 1, 0.4, true)
+			if state.estimate then
+				GameTooltip:AddLine(L["An estimate: in combat the client hides rank and stacks, so the highest rank and one stack are assumed."], 1, 0.8, 0.3, true)
+			end
 		end
 		GameTooltip:AddLine(" ")
 		GameTooltip:AddLine(L["Right-click: announce in chat"], 0.5, 0.8, 1)
@@ -259,6 +262,21 @@ function ns.CreateHUD()
 		end
 	end
 
+	-- Whether the client is showing a debuff in the entry's slot: true, false, or nil when the addon cannot
+	-- tell (no slot, another unit, or the client refuses the question). Second return: the stacks, if readable.
+	function hud:SlotActive(key, unit)
+		local slot = self.slots[key]
+		if not slot or self.boundUnit ~= unit then return nil end
+		local ok, shown = pcall(slot.IsShown, slot)
+		if not ok or ns.IsSecret(shown) then return nil end
+		if not shown then return false end
+		local okAlpha, alpha = pcall(slot.GetAlpha, slot)
+		if okAlpha and not ns.IsSecret(alpha) and type(alpha) == "number" and alpha <= 0 then return false end
+		local okText, text = pcall(slot.Count.GetText, slot.Count)
+		local stacks = okText and not ns.IsSecret(text) and tonumber(text) or nil
+		return true, stacks
+	end
+
 	-- For /adf debug: what the addon can see of a slot.
 	function hud:SlotInfo(key)
 		local slot = self.slots[key]
@@ -371,7 +389,7 @@ function ns.CreateHUD()
 			elseif state.reduction > 0 then
 				-- no armor value from the client: show what the debuffs take off
 				header.armor:SetTextColor(0.4, 1, 0.4)
-				header.armor:SetText("-" .. state.reduction)
+				header.armor:SetText((state.estimate and "~-" or "-") .. state.reduction)
 			else
 				header.armor:SetTextColor(0.6, 0.6, 0.6)
 				header.armor:SetText("-0")
