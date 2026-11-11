@@ -5,7 +5,7 @@ local L = ns.L
 local GOLD = { 1, 0.82, 0 }
 local ROWS_PER_COLUMN = 15
 local ROW_HEIGHT = 22
-local COLUMN_WIDTH = 185
+local COLUMN_WIDTH = 240
 
 local window
 local checks, sliders, debuffRows = {}, {}, {}
@@ -141,7 +141,7 @@ local function DebuffRow(parent, index)
 	row:SetScript("OnEnter", function(self)
 		local entry = self.entry
 		if not entry then return end
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT", COLUMN_WIDTH - 30, 0)
 		GameTooltip:SetText(entry.label, 1, 0.82, 0)
 		if entry.custom then GameTooltip:AddLine(L["Your own entry. Right-click to remove it."], 1, 1, 1, true) end
 		GameTooltip:Show()
@@ -157,7 +157,7 @@ end
 local function Build()
 	window = CreateFrame("Frame", "ForeverADFOptions", UIParent, "BackdropTemplate")
 	window:Hide()
-	window:SetSize(660, 560)
+	window:SetSize(770, 560)
 	window:SetPoint("CENTER")
 	window:SetFrameStrata("DIALOG")
 	window:SetToplevel(true)
@@ -192,10 +192,10 @@ local function Build()
 		{ "hideSolo", L["Hide when not in a group"] },
 		{ "hideNoTarget", L["Hide without a target"] },
 		{ "locked", L["Lock position"] },
-		{ "clickThrough", L["Click-through (no tooltips, no announcing)"] },
+		{ "clickThrough", L["Click-through"], L["The frame ignores the mouse: no tooltips, no announcing by right-click, no moving."] },
 	}
 	for _, def in ipairs(displayChecks) do
-		Check(window, def[1], def[2], x, y)
+		Check(window, def[1], def[2], x, y, def[3])
 		y = y - 24
 	end
 	y = y - 8
@@ -224,7 +224,7 @@ local function Build()
 	Heading(window, L["Add your own debuff"], x, y)
 	y = y - 24
 	local input = CreateFrame("EditBox", nil, window, "InputBoxTemplate")
-	input:SetSize(140, 20)
+	input:SetSize(110, 20)
 	input:SetPoint("TOPLEFT", x + 6, y)
 	input:SetAutoFocus(false)
 	input:SetMaxLetters(60)
@@ -242,7 +242,7 @@ local function Build()
 	end
 	input:SetScript("OnEnterPressed", AddFromInput)
 	input:SetScript("OnEscapePressed", input.ClearFocus)
-	local add = Button(window, L["Add"], 70, AddFromInput)
+	local add = Button(window, L["Add"], 100, AddFromInput)
 	add:SetPoint("LEFT", input, "RIGHT", 6, 0)
 
 	-- Right column

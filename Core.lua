@@ -148,8 +148,12 @@ function ns.BuildIndex()
 		entry.chatName = entry.label
 		if def.note then entry.label = entry.label .. " (" .. def.note .. ")" end
 		entry.icon = (entry.spellId and SpellTexture(entry.spellId)) or ("Interface\\Icons\\" .. def.icon)
-		entries[#entries + 1] = entry
-		byKey[entry.key] = entry
+		-- None of the ids exists in this client (Forever dropped or renumbered the spell): the debuff could
+		-- never light up, so it is left out. Whoever needs it adds it by its Forever spell id.
+		if entry.spellId then
+			entries[#entries + 1] = entry
+			byKey[entry.key] = entry
+		end
 	end
 
 	for _, custom in ipairs(ns.db.custom) do

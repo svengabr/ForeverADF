@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2.2
+
+- Options window: wider debuff columns, no more overlapping label, button and tooltip.
+- Built-in debuffs whose spell does not exist in the client (on Forever: Curse of the Elements, Curse of Shadow,
+  Ignite) are left out of the list. Add them by their Forever spell ID if they exist under another one.
+
 ## 1.2.1
 
 - Out of combat the addon may read whether a slot is lit, in combat the client refuses (tested in the client).

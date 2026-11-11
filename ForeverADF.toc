@@ -3,7 +3,7 @@
 ## Notes: Armor and debuff frame for WoW: Forever. Shows your target's armor, resistances and the raid debuffs that matter (Sunder Armor, Faerie Fire, curses ...), with chat announcements. A port of the Turtle WoW addon aDF.
 ## Notes-deDE: Rüstungs- und Debuff-Anzeige für WoW: Forever. Zeigt Rüstung, Widerstände und die wichtigen Raid-Debuffs deines Ziels (Rüstung zerreißen, Feenfeuer, Flüche ...) und sagt sie im Chat an. Eine Portierung des Turtle-WoW-Addons aDF.
 ## Author: Sven
-## Version: 1.2.1
+## Version: 1.2.2
 ## SavedVariablesPerCharacter: ForeverADFCharDB
 ## IconTexture: Interface\Icons\Ability_Warrior_Sunder
 ## X-License: GPL-3.0-or-later

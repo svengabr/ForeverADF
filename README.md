@@ -70,7 +70,8 @@ Copy the folder into `World of Warcraft/_forever_/Interface/AddOns/` and name it
 
 - No SuperWoW, no tooltip scanning: the modern aura API gives spell IDs, stacks and real remaining times.
 - The reason for an armor rise comes from the debuffs that disappeared, not from a table of armor values.
-- Debuffs that do not exist on Forever simply stay dark; add what your raid needs as your own entries.
+- Debuffs whose spell does not exist in the Forever client are left out of the list; add what your raid needs
+  as your own entries by spell ID.
 
 ## Credits
 
