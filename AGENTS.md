@@ -59,7 +59,14 @@ to paste it there by hand. Tags and pushes only after the maintainer approves.
 ## Artwork
 
 `media/logo.svg` is drawn by hand (no game assets; CurseForge rejects those as a logo). `sh media/render-logo.sh`
-renders `media/logo.png` and the in-game `Icon.tga`. `media/gallery/*.html` are the CurseForge gallery images
-(1920×1080), rendered with `sh media/gallery/render.sh`. Fonts and spell icons there are Blizzard assets and
-git-ignored: copy `fonts/FRIZQT__.TTF` from another addon's gallery and fetch
-`icons/<name>.jpg` from `https://wow.zamimg.com/images/wow/icons/large/<name>.jpg`.
+renders `media/logo.png` and the in-game `Icon.tga`.
+
+The gallery pictures are real in-game screenshots, not retouched. `/adf shots` (`Shots.lua`) lights made-up
+debuffs on the frame and takes three screenshots: the frame in the world, the frame alone in front of a plain
+sheet, and the options in front of that sheet. `/adf shots demo` switches the made-up debuffs on and off for
+pictures taken by hand. Then
+
+    python media/gallery/gallery.py "<WoW folder>/_forever_/Screenshots"
+
+copies the run to `media/gallery/src/` (git-ignored) and writes `01-ingame.jpg` and `02-options.jpg`
+(1920×1080). Needs Pillow and numpy.

@@ -1,4 +1,3 @@
 .DS_Store
 *.zip
-media/gallery/fonts/
-media/gallery/icons/
+media/gallery/src/

@@ -6,7 +6,7 @@ Forever ADF is a port of [aDF](https://turtle-wow.fandom.com/wiki/ADF), the armo
 
 It keeps working in combat, which on Forever is the hard part. More on that below.
 
-![Forever ADF](https://raw.githubusercontent.com/svengabr/ForeverADF/main/media/gallery/01-overview.jpg)
+![Forever ADF in the game](https://raw.githubusercontent.com/svengabr/ForeverADF/main/media/gallery/01-ingame.jpg)
 
 ## What it does
 
@@ -16,6 +16,8 @@ It keeps working in combat, which on Forever is the hard part. More on that belo
 - You choose which debuffs are tracked, how big the icons are and how many sit in a row. The frame can hide itself out of combat, outside of a group or without a target.
 - Anything that is not in the list you add yourself by spell ID.
 - English and German. The debuff names come from the game, so they are in your client's language either way.
+
+![The options](https://raw.githubusercontent.com/svengabr/ForeverADF/main/media/gallery/02-options.jpg)
 
 ## Debuffs in the list
 

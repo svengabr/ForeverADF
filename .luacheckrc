@@ -11,6 +11,7 @@ read_globals = {
 	"C_StringUtil",
 	"C_Timer",
 	"CreateFrame",
+	"ForeverADFOptions",
 	"Enum",
 	"GameFontNormal",
 	"GameTooltip",

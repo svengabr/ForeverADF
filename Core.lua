@@ -210,6 +210,7 @@ end
 function ns.Update(rebind)
 	local hud = ns.HUD
 	if not hud then return end
+	if ns.ShotsBusy and ns.ShotsBusy() then return end -- /adf shots shows made-up debuffs; leave the frame alone
 	local unit = PickUnit()
 	ns.unit = unit
 	hud:BindUnit(unit, rebind == true)
@@ -304,6 +305,12 @@ SlashCmdList["FOREVERADF"] = function(message)
 		ns.db.locked = command == "lock" and not ns.db.locked
 		ns.Refresh()
 		ns.Print(ns.db.locked and L["Frame locked."] or L["Frame unlocked. Hold Shift and drag to move it."])
+	elseif command == "shots" then
+		ns.TakeShots()
+		return
+	elseif command == "shots demo" then
+		ns.ToggleDemo()
+		return
 	elseif command == "reset" then
 		ns.ResetPosition()
 		ns.Print(L["Position reset."])
