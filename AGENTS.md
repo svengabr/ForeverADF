@@ -17,6 +17,7 @@ On Forever only the debuff half of aDF is possible (see "Client facts"), so this
 - `Frame.lua` – the frame on screen (`ns.HUD`): per debuff a dimmed icon of the addon and, on top, a slot of
   the client's aura container. `Layout` runs after option changes.
 - `Options.lua` – the options window, built on first use.
+- `CreatorTooltip.lua` – a line in the tooltips of the creator's characters, listed there by GUID.
 
 ## Client facts (all seen in the client, November 2026)
 

@@ -25,3 +25,4 @@ Core.lua
 Frame.lua
 Options.lua
 Shots.lua
+CreatorTooltip.lua

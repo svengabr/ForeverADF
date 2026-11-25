@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.1.0
+
+- The addon's creator has a "Forever ADF Creator" line in the tooltip.
+
 ## 2.0.1
 
 - `/adf shots` takes the screenshots for the gallery, with made-up debuffs lit on the frame. `/adf shots demo`
